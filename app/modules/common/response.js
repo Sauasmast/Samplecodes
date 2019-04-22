@@ -6,12 +6,12 @@ const config = require(__base + '/app/config/config');
 module.exports.success = (request_id, body, res) => {
   logger.debug(request_id, JSON.stringify(body));
   res.status(200).send(body);
-}
+};
 
 module.exports.failure = (request_id, error, res) => {
   try {
     let body;
-    if(error && error.code && (error.message || error.custom_message)) {
+    if (error && error.code && (error.message || error.custom_message)) {
       let internal_code = parseInt(error.code.toString().split('.')[0]);
       let message;
       let http_code;
@@ -20,28 +20,52 @@ module.exports.failure = (request_id, error, res) => {
         case 103:
           http_code = 400;
           message = 'Parameter error.';
-          body = responseBody(request_id, http_code, internal_code, message, error);
+          body = responseBody(
+            request_id,
+            http_code,
+            internal_code,
+            message,
+            error
+          );
           res.status(http_code).send(body);
           break;
 
         case 102:
           http_code = 500;
           message = 'Internal server error.';
-          body = responseBody(request_id, http_code, internal_code, message, error);
+          body = responseBody(
+            request_id,
+            http_code,
+            internal_code,
+            message,
+            error
+          );
           res.status(http_code).send(body);
           break;
 
         case 101:
           http_code = 401;
           message = 'Unauthorized.';
-          body = responseBody(request_id, http_code, internal_code, message, error);
+          body = responseBody(
+            request_id,
+            http_code,
+            internal_code,
+            message,
+            error
+          );
           res.status(http_code).send(body);
           break;
 
         case 105:
           http_code = 403;
           message = 'Invalid Access.';
-          body = responseBody(request_id, http_code, internal_code, message, error);
+          body = responseBody(
+            request_id,
+            http_code,
+            internal_code,
+            message,
+            error
+          );
           res.status(http_code).send(body);
           break;
 
@@ -51,10 +75,10 @@ module.exports.failure = (request_id, error, res) => {
     } else {
       internalError(request_id, error, res);
     }
-  } catch(e) {
+  } catch (e) {
     internalError(request_id, error, res);
   }
-}
+};
 
 let responseBody = (request_id, http_code, internal_code, message, body) => {
   logger.debug(request_id, JSON.stringify(body));

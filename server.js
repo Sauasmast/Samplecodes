@@ -1,5 +1,6 @@
-'use strict'
+'use strict';
 
+require('dotenv').config();
 global.__base = __dirname;
 
 const express = require('express');
@@ -48,10 +49,12 @@ if (config.app.environment !== 'production') {
 
     res.status(err.status || 500);
 
-    res.json({'errors': {
-      message: err.message,
-      error: err
-    }});
+    res.json({
+      errors: {
+        message: err.message,
+        error: err
+      }
+    });
   });
 }
 
@@ -59,10 +62,12 @@ if (config.app.environment !== 'production') {
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
-  res.json({'errors': {
-    message: err.message,
-    error: {}
-  }});
+  res.json({
+    errors: {
+      message: err.message,
+      error: {}
+    }
+  });
 });
 
 // initializing
