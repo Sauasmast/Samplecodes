@@ -11,10 +11,7 @@ module.exports.getlink = async (req, res) => {
     if (exist) {
       res.send('User exists');
     } else {
-      let createreferral = referral.createreferraldata(
-        req.request_id,
-        req.authInfo
-      );
+      await referral.createdata(req.request_id, req.authInfo.tokenData);
     }
   } catch (e) {
     res.send(e);

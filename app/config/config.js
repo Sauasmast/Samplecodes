@@ -27,9 +27,21 @@ module.exports = {
     max_conn_limit: process.env.MYSQL_MAX_CONN_LIMIT
   },
   aws: {
+    s3: {
+      accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY
+    },
+    ses: {
+      accessKeyId: process.env.AWS_SES_ACCESS_KEY,
+      secretAccessKey: process.env.AWS_SES_SECRET_ACCESS_KEY,
+      region: process.env.AWS_SES_REGION,
+      version: process.env.AWS_API_VERSION
+    }
   },
-  host: {
+  email: {
+    from: process.env.FROM_EMAIL
   },
+  host: {},
   telegram: {
     bot: process.env.TELEGRAM_WEBHOOK_URL
   },

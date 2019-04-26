@@ -1,0 +1,8 @@
+{
+  "Template": {
+    "TemplateName": "ReferTemplate",
+    "SubjectPart": "Welcome To Hazelnut Familia !!!",
+    "HtmlPart": "<h1> Welcome to Hazelnut Familia!!</h1><h4> Glad to see you.</h4><p> Hi, </p> <p>Your friend {{name}} referred you to use our app hazelnut. We can't wait to see you. Please use this referral code to sign up</p> <p>Referral code: {{refer_code}}</p>",
+    "TextPart": ""
+  }
+}

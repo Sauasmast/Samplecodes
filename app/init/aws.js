@@ -7,7 +7,7 @@ const logger = require(__base + '/app/modules/common/logger');
 
 let s3 = null;
 
-function initializeAWS_SDK_S3 () {
+function initializeAWS_SDK_S3() {
   logger.debug(`Initializing AWS`);
 
   AWS.config.update({
@@ -25,7 +25,7 @@ function initializeAWS_SDK_S3 () {
 initializeAWS_SDK_S3();
 
 module.exports.getS3 = () => {
-  if (!s3){
+  if (!s3) {
     initializeAWS_SDK_S3();
   }
 

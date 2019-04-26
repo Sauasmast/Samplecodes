@@ -17,6 +17,7 @@ module.exports.query = (request_id, db, query, values, log) => {
           reject(err);
         } else {
           const sql = mysql.format(query, values);
+          console.log(sql);
           const database_call = connection.query(sql, function(
             error,
             results,
