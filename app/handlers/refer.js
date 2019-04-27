@@ -10,7 +10,6 @@ module.exports.referpeople = async (req, res) => {
       emails,
       codes
     );
-    console.log('Resolved');
     const count = await refer.updatecount(
       req.request_id,
       req.authInfo.user_id,

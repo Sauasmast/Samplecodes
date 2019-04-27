@@ -13,7 +13,7 @@ module.exports.checkCodeEmail = (request_id, code, email) => {
       ]);
       if (result.length == 0) {
         reject({
-          status: 103,
+          code: 103,
           message: 'Make sure the email address and the code matches'
         });
       } else if (result.length == 1) {
