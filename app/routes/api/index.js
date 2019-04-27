@@ -6,6 +6,7 @@ const logger = require(__base + '/app/modules/common/logger');
 const referral = require(__base + '/app/handlers/referral');
 const authorization = require(__base + '/app/routes/config/authorization');
 const refer = require(__base + '/app/handlers/refer');
+const validate = require(__base + '/app/handlers/validate');
 
 exports = module.exports = app => {
   // health checks
@@ -18,4 +19,5 @@ exports = module.exports = app => {
 
   app.route(route.referral).get(authorization.authCheck, referral.getlink);
   app.route(route.refer).post(authorization.authCheck, refer.referpeople);
+  app.route(route.validate).post(validate.checkReferralCode);
 };
