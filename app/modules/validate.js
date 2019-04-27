@@ -1,4 +1,5 @@
 const mysql = require(__base + '/app/modules/common/mysql');
+const uuid = require('uuid/v4');
 const db = 'provisioning';
 
 module.exports.checkCodeEmail = (request_id, code, email) => {
@@ -47,6 +48,29 @@ module.exports.updateActivateCount = (request_id, user_id) => {
     let queryString = `UPDATE users_referred_count SET activated_count= activated_count + 1 WHERE user_id = ?`;
     try {
       let result = await mysql.query(request_id, db, queryString, user_id);
+      if (result.affectedRows == 1) {
+        resolve();
+      } else {
+        reject({ status: 102, message: 'Internal Server Error' });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+module.exports.makeUserConfig = (request_id, user_id) => {
+  return new Promise(async (resolve, reject) => {
+    data = {
+      user_id,
+      type: 'standard',
+      max_referral_count: 25,
+      default_count: 0,
+      increase_count_by: 0
+    };
+    let queryString = `INSERT INTO users_config SET ?`;
+    try {
+      let result = await mysql.query(request_id, db, queryString, data);
       if (result.affectedRows == 1) {
         resolve();
       } else {

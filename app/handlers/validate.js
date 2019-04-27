@@ -22,6 +22,7 @@ module.exports.checkReferralCode = async (req, res) => {
       req.request_id,
       get_referring_user.user_id
     );
+    await validate.makeUserConfig(req.request_id, data.user_id);
     res.send({
       status: 200,
       message: { user_id: data.user_id }
