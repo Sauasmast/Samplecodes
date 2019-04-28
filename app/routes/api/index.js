@@ -17,7 +17,7 @@ exports = module.exports = app => {
 
   app.get('/', (req, res) => res.send('this is working.......'));
 
-  app.route(route.referral).get(authorization.authCheck, referral.getlink);
+  app.route(route.referral).get(authorization.authCheck, referral.getdata);
   app.route(route.refer).post(authorization.authCheck, refer.referpeople);
   app.route(route.validate).post(validate.checkReferralCode);
 };
