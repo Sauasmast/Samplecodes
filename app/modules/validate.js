@@ -2,6 +2,16 @@ const mysql = require(__base + '/app/modules/common/mysql');
 const uuid = require('uuid/v4');
 const db = 'provisioning';
 
+module.exports.init = (request_id, code) => {
+  return new Promise(async (resolve, reject) => {
+    if (code.toString().trim().length == 6) {
+      resolve();
+    } else {
+      reject({ code: 103, custom_message: 'You entered the wrong code.' });
+    }
+  });
+};
+
 module.exports.checkCodeEmail = (request_id, code, email) => {
   return new Promise(async (resolve, reject) => {
     const queryString =
@@ -14,7 +24,7 @@ module.exports.checkCodeEmail = (request_id, code, email) => {
       if (result.length == 0) {
         reject({
           code: 103,
-          message: 'Make sure the email address and the code matches'
+          custom_message: 'Make sure the email address and the code matches.'
         });
       } else if (result.length == 1) {
         resolve(result[0]);
