@@ -39,6 +39,7 @@ module.exports.sendemail = (request_id, name, emails, codes) => {
 
     sendPromise
       .then(function(data) {
+        console.log('----sent email---');
         resolve(data);
       })
       .catch(function(err) {
