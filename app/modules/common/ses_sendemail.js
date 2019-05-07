@@ -1,7 +1,8 @@
 const AWS = require('aws-sdk');
 const config = require(__base + '/app/config/config');
 
-module.exports.sendemail = (request_id, name, emails, codes) => {
+module.exports.sendemail = (request_id, user_email, emails, codes) => {
+  console.log('Sending email to ' + user_email);
   return new Promise(async (resolve, reject) => {
     let destinations = [];
 
@@ -17,17 +18,17 @@ module.exports.sendemail = (request_id, name, emails, codes) => {
           ToAddresses: [email]
         },
         ReplacementTemplateData: `{
-          name: ${name},
+          email: ${user_email},
           refer_code: ${codes[index].toString()}
         }`
       });
     });
 
     const params = {
-      Source: 'saugatdahal14@gmail.com',
+      Source: 'rashul1996@gmail.com',
       Template: 'ReferTemplate',
       Destinations: destinations,
-      DefaultTemplateData: '{ "name":"", "refer_code":"" }'
+      DefaultTemplateData: '{ "email":"", "refer_code":"" }'
     };
 
     // Create the promise and SES service object
