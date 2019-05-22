@@ -47,5 +47,9 @@ module.exports = {
   },
   jwt: {
     cert: process.env.JWT_TOKEN_CERT
+  },
+  sendgrid: {
+    email_refer_template_id: process.env.EMAIL_REFER_TEMPLATE_ID,
+    api_key: process.env.SENDGRID_API_KEY
   }
 };
