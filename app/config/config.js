@@ -2,7 +2,7 @@
 
 module.exports = {
   app: {
-    port: process.env.PORT || 3006,
+    port: process.env.PORT || 3004,
     environment: process.env.ENVIRONMENT || 'local'
   },
   mysql: {
@@ -51,5 +51,8 @@ module.exports = {
   sendgrid: {
     email_refer_template_id: process.env.EMAIL_REFER_TEMPLATE_ID,
     api_key: process.env.SENDGRID_API_KEY
+  },
+  telegram: {
+    bot: process.env.TELEGRAM_WEBHOOK_URL
   }
 };

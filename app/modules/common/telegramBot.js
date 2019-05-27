@@ -11,13 +11,14 @@ module.exports.send = (request_id, message) => {
       let telegram_bot_body =   {
         "text": message
       }
-
+      
       logger.debug(request_id, `Telegram payload: ${JSON.stringify(telegram_bot_body)}.`);
-
       request.post({
         url: config.telegram.bot,
         json: telegram_bot_body
       }, (error, response, body) => {
+        if(error) console.log(error);
+        console.log(body);
         logger.debug(request_id, `Telegram message success.`);
       });
     }

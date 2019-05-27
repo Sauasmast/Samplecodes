@@ -12,12 +12,14 @@ module.exports.checkReferralCode = async (req, res) => {
       code,
       signup_email
     );
+   
     const data = {
       user_id: uuidv4(),
       reference_id: get_referring_user.id,
       referred_by_user_id: get_referring_user.user_id,
       email: signup_email
     };
+  
     await referral.createdata(req.request_id, data);
     await validate.activeUser(req.request_id, get_referring_user.id);
     await validate.updateActivateCount(
