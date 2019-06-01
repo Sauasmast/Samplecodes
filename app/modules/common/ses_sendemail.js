@@ -52,10 +52,8 @@ const logger = require(__base + '/app/modules/common/logger');
 //   });
 // };
 
-
 module.exports.sendemail = (request_id, user_email, emails, codes) => {
-  return new Promise( async (resolve, reject) => {
-
+  return new Promise(async (resolve, reject) => {
     try {
       const msg = {
         to: emails[0],
@@ -64,28 +62,27 @@ module.exports.sendemail = (request_id, user_email, emails, codes) => {
         dynamic_template_data: {
           email: user_email,
           refer_code: codes[0].toString()
-        },
+        }
       };
 
       sgMail.setApiKey(config.sendgrid.api_key);
       logger.debug(request_id, JSON.stringify(msg));
 
-
       sgMail.send(msg, function(err, data) {
-        console.log(err, null)
+        console.log(err, null);
         if (err) {
-          console.log('err',err);
-          reject({ code: 400, message: { message: err.message, stack: err.stack } });
-        }
-        else {
+          console.log('err', err);
+          reject({
+            code: 400,
+            message: { message: err.message, stack: err.stack }
+          });
+        } else {
           logger.debug(request_id, JSON.stringify(data));
           resolve();
         }
       });
-
-    } catch(e) {
+    } catch (e) {
       reject({ code: 400, message: { message: e.message, stack: e.stack } });
     }
   });
 };
-

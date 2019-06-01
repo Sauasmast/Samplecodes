@@ -4,6 +4,7 @@ const config = require(__base + '/app/config/config');
 const uuidv4 = require('uuid/v4');
 const db = 'provisioning';
 const mysql = require(__base + '/app/modules/common/mysql');
+const axios = require('axios');
 
 module.exports.checkuserconfiguration = (request_id, user_id, total_number) => {
   return new Promise(async (resolve, reject) => {
@@ -35,6 +36,50 @@ module.exports.checkuserconfiguration = (request_id, user_id, total_number) => {
       }
     } catch (e) {
       reject(e);
+    }
+  });
+};
+
+module.exports.checkIfUserExist = (request_id, emails) => {
+  // Shortcut for the referral service because we are dealing with only one user at a time right now.
+  const email = emails[0];
+
+  return new Promise(async (resolve, reject) => {
+    let queryString = 'SELECT * FROM users where email = ?';
+    try {
+      let result = await mysql.query(request_id, db, queryString, email);
+      if (result.length == 0) {
+        resolve();
+      } else {
+        reject({ code: 103, custom_message: 'User already exists.' });
+      }
+    } catch (e) {
+      reject({ code: 102, message: 'Internal Server Error' });
+    }
+  });
+};
+
+module.exports.checkIfAlreadyReferred = (request_id, user_id, emails) => {
+  return new Promise(async (resolve, reject) => {
+    // Shortcut for the referral service because we are dealing with only one user at a time right now.
+    const email = emails[0];
+    let queryString =
+      'SELECT * FROM users_referred WHERE user_id = ? AND email = ? AND soft_delete = 0';
+    try {
+      let result = await mysql.query(request_id, db, queryString, [
+        user_id,
+        email
+      ]);
+      if (result.length == 0) {
+        resolve();
+      } else {
+        reject({
+          code: 103,
+          custom_message: 'You have already referred the user'
+        });
+      }
+    } catch (e) {
+      reject({ code: 102, custom_message: 'Internal Server Error' });
     }
   });
 };
