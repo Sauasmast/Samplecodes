@@ -15,7 +15,7 @@ module.exports.init = (request_id, code) => {
 module.exports.checkCodeEmail = (request_id, code, email) => {
   return new Promise(async (resolve, reject) => {
     const queryString =
-      'SELECT * from users_referred WHERE code = ? AND email = ?';
+      'SELECT * from users_referred WHERE code = ? AND email = ? AND soft_delete = 0';
     try {
       let result = await mysql.query(request_id, db, queryString, [
         code,

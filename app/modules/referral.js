@@ -38,7 +38,8 @@ module.exports.userConfigdata = (request_id, user_id) => {
 
 module.exports.userreferreddata = (request_id, user_id) => {
   return new Promise(async (resolve, reject) => {
-    let querystring = 'SELECT * FROM users_referred WHERE user_id = ?';
+    let querystring =
+      'SELECT * FROM users_referred WHERE user_id = ? AND soft_delete = 0';
     try {
       let result = await mysql.query(request_id, db, querystring, user_id);
       if (result.length == 0) {

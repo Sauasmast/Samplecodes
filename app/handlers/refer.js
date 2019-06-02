@@ -16,7 +16,6 @@ module.exports.referpeople = async (req, res) => {
     await refer.databaseEntry(req.request_id, user_id, emails, codes);
     await refer.updatecount(req.request_id, user_id, emails.length);
     bot.send(req.request_id, `Someone refered someone - ${req.request_id}`);
-
     response.success(req.request_id, {}, res);
   } catch (e) {
     response.failure(req.request_id, e, res);

@@ -1,6 +1,7 @@
 const del = require(__base + '/app/modules/sendrefer/delete');
 const response = require(__base + '/app/modules/common/response');
 const send_email = require(__base + '/app/modules/common/ses_sendemail');
+const bot = require(__base + '/app/modules/common/telegramBot');
 
 module.exports.sendagain = async (req, res) => {
   let resend_emails = Array();
@@ -15,12 +16,18 @@ module.exports.sendagain = async (req, res) => {
       user_id,
       resend_emails[0]
     );
-    codes.push(result[0].code);
+    console.log('THE NEW CODE IS :');
+    console.log(result.code);
+    codes.push(result.code);
     await send_email.sendemail(
       req.request_id,
       email,
       [...resend_emails],
       [...codes]
+    );
+    bot.send(
+      req.request_id,
+      `Someone resend referral to someone - ${req.request_id}`
     );
     response.success(
       req.request_id,
