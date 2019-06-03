@@ -8,14 +8,16 @@ module.exports.referpeople = async (req, res) => {
     const { emails } = req.body;
     const user_id = req.authInfo.user_id;
     const email = req.authInfo.tokenData.email;
+    await refer.validation(req.request_id, emails[0]);
     await refer.checkuserconfiguration(req.request_id, user_id, emails.length);
     await refer.checkIfUserExist(req.request_id, emails);
     await refer.checkIfAlreadyReferred(req.request_id, user_id, emails);
     const codes = await refer.createcode(req.request_id, emails);
-    await send_email.sendemail(req.request_id, email, emails, codes);
     await refer.databaseEntry(req.request_id, user_id, emails, codes);
     await refer.updatecount(req.request_id, user_id, emails.length);
+    await refer.updateUserConfig(req.request_id, user_id, emails.length);
     bot.send(req.request_id, `Someone refered someone - ${req.request_id}`);
+    await send_email.sendemail(req.request_id, email, emails, codes);
     response.success(req.request_id, {}, res);
   } catch (e) {
     response.failure(req.request_id, e, res);

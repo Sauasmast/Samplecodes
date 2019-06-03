@@ -6,6 +6,17 @@ const db = 'provisioning';
 const mysql = require(__base + '/app/modules/common/mysql');
 const axios = require('axios');
 
+module.exports.validation = (request_id, data) => {
+  return new Promise((resolve, reject) => {
+    const email_regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (email_regex.test(String(data).toLowerCase())) {
+      resolve();
+    } else {
+      reject({ code: 103.2, message: 'Attributes validation incorrect.' });
+    }
+  });
+};
+
 module.exports.checkuserconfiguration = (request_id, user_id, total_number) => {
   return new Promise(async (resolve, reject) => {
     let queryString = 'SELECT * from users_config WHERE user_id = ? ';
@@ -22,16 +33,7 @@ module.exports.checkuserconfiguration = (request_id, user_id, total_number) => {
             message: `You cannot refer more than ${max_count}`
           });
         } else {
-          queryString = `UPDATE users_config SET default_count = ? WHERE user_id = ?`;
-          result = await mysql.query(request_id, db, queryString, [
-            user_referred + total_number,
-            user_id
-          ]);
-          if (result.affectedRows == 1) {
-            resolve();
-          } else {
-            reject({ code: 102, message: 'Internal Server Error' });
-          }
+          resolve();
         }
       }
     } catch (e) {
@@ -161,6 +163,22 @@ module.exports.updatecount = (request_id, user_id, count) => {
         }
       } else {
         reject({ status: 102, message: 'Internal Server Error' });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+module.exports.updateUserConfig = (request_id, user_id, total_number) => {
+  return new Promise(async (resolve, reject) => {
+    let queryString = `UPDATE users_config SET default_count = default_count + ${total_number} WHERE user_id = ?`;
+    try {
+      let result = await mysql.query(request_id, db, queryString, [user_id]);
+      if (result.affectedRows == 1) {
+        resolve();
+      } else {
+        reject({ code: 102, message: 'Internal Server Error' });
       }
     } catch (e) {
       reject(e);
