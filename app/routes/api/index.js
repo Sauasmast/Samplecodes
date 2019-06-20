@@ -11,13 +11,15 @@ const resend = require(__base + '/app/handlers/sendrefer/resendrefer');
 const del = require(__base + '/app/handlers/sendrefer/deleterefer');
 
 exports = module.exports = app => {
+
+  logger.info(`Routes initialized.`)
+
   // health checks
-  // app.get('/', health.check);
-  // app.get('/health', health.check);
+  app.get('/', health.check);
+  app.get('/health', health.check);
 
-  // logger.info(`Routes initialized.`);
 
-  app.get('/', (req, res) => res.send('this is working.......'));
+  // app.get('/', (req, res) => res.send('this is working.......'));
 
   app.route(route.referral).get(authorization.authCheck, referral.getdata);
   app.route(route.refer).post(authorization.authCheck, refer.referpeople);
@@ -26,4 +28,7 @@ exports = module.exports = app => {
   // This is responsible for resending the referral or deleting the referral system.
   app.route(route.resend).get(authorization.authCheck, resend.sendagain);
   app.route(route.delete).post(authorization.authCheck, del.deleterefer);
+
+
+
 };
