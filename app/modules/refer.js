@@ -17,6 +17,45 @@ module.exports.validation = (request_id, data) => {
   });
 };
 
+module.exports.init = (request_id, data) => {
+  return new Promise((resolve, reject) => {
+    if(typeof data.email === 'undefined') {
+      resolve();
+    } else {
+      reject({ code: 103.2, message: 'Attributes validation incorrect.' });
+    }
+  });
+};
+
+module.exports.sendWebReferral = (request_id, data) => {
+  return new Promise((resolve, reject) => {
+    const email_regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (email_regex.test(String(data).toLowerCase())) {
+      resolve();
+    } else {
+      reject({ code: 103.2, message: 'Invalid email format.' });
+    }
+  });
+};
+
+module.exports.checkIfWebUserExist = (request_id, payload) => {
+  return new Promise(async (resolve, reject) => {
+   
+    try {
+      let queryString = 'SELECT * from web_users WHERE web_user_id =?';
+      const { email } = payload;
+      let results = await mysql.query(request_id, db, queryString, [email]);
+      if(results.length > 1) {
+        reject({ code: 103.1, custom_message: 'User has already registered. Please verify the account.' });
+      } else {
+        resolve();
+      }
+    } catch(e) {
+      reject({ code: 102, message: 'Internal Server Error' });
+    }
+  })
+}
+
 module.exports.checkuserconfiguration = (request_id, user_id, total_number) => {
   return new Promise(async (resolve, reject) => {
     let queryString = 'SELECT * from users_config WHERE user_id = ? ';
@@ -37,7 +76,7 @@ module.exports.checkuserconfiguration = (request_id, user_id, total_number) => {
         }
       }
     } catch (e) {
-      reject(e);
+      reject({ code: 102, message: 'Internal Server Error' });
     }
   });
 };
@@ -58,6 +97,31 @@ module.exports.checkIfUserExist = (request_id, emails) => {
     } catch (e) {
       reject({ code: 102, message: 'Internal Server Error' });
     }
+  });
+};
+
+module.exports.insertIntoUsersTable = (request_id, payload) => {
+  return new Promise((resolve, reject) => {
+    const queryString = `INSERT INTO web_users SET ?`;
+    emails.forEach(async (email, index) => {
+      let queryBody = {
+        web_user_id: uuidv4(),
+        email: payload.email,
+        status: 'pending',
+        password: null
+      };
+      try {
+        let result = await mysql.query(request_id, db, queryString, queryBody);
+        if (result.affectedRows === 1) {
+          resolve();
+        } else {
+          reject({ code: 102, message: 'Internal server error while inserting users.' });
+        }
+      } catch (e) {
+        reject({ code: 102, custom_message: 'Internal Server Error' });
+      }
+    });
+    resolve();
   });
 };
 

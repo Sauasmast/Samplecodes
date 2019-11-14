@@ -5,8 +5,7 @@ const config = require(__base + '/app/config/config');
 const logger = require(__base + '/app/modules/common/logger');
 
 const provisioning = config.mysql.provisioning_db_database;
-const promotion = config.mysql.promotion_db_database;
-const profile = config.mysql.profile_db_database;
+
 const query = 'SELECT 1+1;';
 
 /** Provisioning DB **/
