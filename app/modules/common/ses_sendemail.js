@@ -2,6 +2,7 @@ const AWS = require('aws-sdk');
 const config = require(__base + '/app/config/config');
 const sgMail = require('@sendgrid/mail');
 const logger = require(__base + '/app/modules/common/logger');
+const bot = require(__base + '/app/modules/common/telegramBot');
 
 // module.exports.sendemail = (request_id, user_email, emails, codes) => {
 //   console.log('Sending email to ' + user_email);
@@ -52,23 +53,24 @@ const logger = require(__base + '/app/modules/common/logger');
 //   });
 // };
 
-module.exports.sendemail = (request_id, user_email, emails, codes) => {
+module.exports.sendemail = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
+    logger.info('Sending a website referral email');
     try {
       const msg = {
-        to: emails[0],
+        to: payload.emails,
         from: config.email.from,
         templateId: config.sendgrid.email_refer_template_id,
         dynamic_template_data: {
-          email: user_email,
-          refer_code: codes[0].toString()
+          email: payload.email,
+          link: `www.gethazelnut.com/${payload.refer_code}`
         }
       };
 
       sgMail.setApiKey(config.sendgrid.api_key);
       logger.debug(request_id, JSON.stringify(msg));
 
-      sgMail.send(msg, function(err, data) {
+      sgMail.sendMultiple(msg, function(err, data) {
         console.log(err, null);
         if (err) {
           console.log('err', err);
@@ -78,6 +80,8 @@ module.exports.sendemail = (request_id, user_email, emails, codes) => {
           });
         } else {
           logger.debug(request_id, JSON.stringify(data));
+          bot.send(request_id, `Refer email sent - ${request_id}`);
+
           resolve();
         }
       });

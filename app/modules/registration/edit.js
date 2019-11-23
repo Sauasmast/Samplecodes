@@ -12,13 +12,34 @@ const salt_rounds = 10;
 
 module.exports.init = (request_id, data) => {
   return new Promise((resolve, reject) => {
-    if(typeof data.email !== 'undefined' || typeof data.password !== 'undefined' || typeof data.password !== 'undefined' ) {
-      resolve();
+    if(typeof data.email !== 'undefined' || typeof data.password !== 'undefined' || typeof data.password !== 'undefined' || typeof data.signup_token !== 'undefined' ) {
+      if(data.signup_token)
+        resolve();
+      else 
+      reject({ code: 103.2, custom_message: 'Invalid request. Please try to reset password.' });
     } else {
       reject({ code: 103.2, custom_message: 'Attributes validation incorrect.' });
     }
   });
 };
+
+module.exports.authorizeSignupToken = (request_id, payload) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let queryString = 'SELECT * from web_users WHERE email =? AND signup_token = ? ';
+      const { email, signup_token } = payload;
+
+      let results = await mysql.query(request_id, db, queryString, [email, signup_token]);
+      if(results.length === 1) {
+        resolve();
+      } else {
+        reject({ code: 103.1, custom_message: 'Invalid request. Please reset password.' });
+      }
+    } catch(e) {
+      reject({ code: 102, message: 'Internal Server Error' });
+    }
+  })
+}
 
 module.exports.checkIfWebUserExist = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
@@ -60,13 +81,13 @@ module.exports.hashPassword = (request_id, payload) => {
 
 module.exports.updateUsersTable = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
-    const queryString = 'UPDATE web_users SET password = ?, status = ? WHERE user_id = ? AND status = ?';
+    const queryString = 'UPDATE web_users SET password = ?, status = ?, signup_token =? WHERE user_id = ? AND status = ?';
 
     try {
       const { email, password, user_id } = payload;
       const status = 'active';
 
-      let result = await mysql.query(request_id, db, queryString, [password, status, user_id, 'pending']);
+      let result = await mysql.query(request_id, db, queryString, [password, status, null, user_id, 'pending']);
       if (result.affectedRows === 1) {
         resolve();
       } else {

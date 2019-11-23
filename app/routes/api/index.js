@@ -5,8 +5,10 @@ const route = require(__base + '/app/routes/config/constants');
 const logger = require(__base + '/app/modules/common/logger');
 const referral = require(__base + '/app/handlers/referral');
 const authorization = require(__base + '/app/routes/config/authorization');
+
 const refer = require(__base + '/app/handlers/refer');
 const registration = require(__base + '/app/handlers/registration');
+const login = require(__base + '/app/handlers/login');
 
 const validate = require(__base + '/app/handlers/validate');
 const resend = require(__base + '/app/handlers/sendrefer/resendrefer');
@@ -31,12 +33,21 @@ exports = module.exports = app => {
   app.route(route.resend).get(authorization.authCheck, resend.sendagain);
   app.route(route.delete).post(authorization.authCheck, del.deleterefer);
 
+
+  //Web Referral Routes--->
+
   app.route(route.web_registration)
     .post(registration.register)
     .put(registration.finalizeRegistration)
 
   app.route(route.web_refer)
     .post(refer.sendWebReferral);
+
+  app.route(route.web_login)
+    .post(login.handleLogin)
+
+  app.route(route.refer_registration)
+    .post(referral.registerWithReferral)
 
   
 };

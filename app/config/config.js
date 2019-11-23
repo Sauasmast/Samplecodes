@@ -42,5 +42,9 @@ module.exports = {
   },
   telegram: {
     bot: process.env.TELEGRAM_WEBHOOK_URL
+  },
+  referConfig: {
+    accepted_points: 500,
+    pending_points: 200
   }
 };

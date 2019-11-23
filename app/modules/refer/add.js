@@ -127,5 +127,77 @@ module.exports.insertIntoReferralTable = (request_id, payload) => {
  })
 };
 
+ 
+
+ module.exports.insertToDashboardTable = (request_id, payload) => {
+  return new Promise(async (resolve, reject) => {
+   try {
+     const queryString = `INSERT INTO dashboard SET ?`;
+     let queryBody = {
+       refer_id: uuidv4(),
+       user_referred_by: payload.user_id,
+       refer_to_email: payload.referEmail,
+       status: 'pending',
+       refer_code: payload.refer_code
+     };
+     let result = await mysql.query(request_id, db, queryString, queryBody);
+     if (result.affectedRows === 1) {
+       resolve();
+     } else {
+       reject({ code: 102, message: 'Internal server error while inserting into referral.' });
+     }
+   } catch (e) {
+     reject({ code: 102, message: { message: e.message, stack: e.stack } });
+   }
+  })
+ };
+
+
+module.exports.insertIntoReferralTable = (request_id, payload) => {
+ return new Promise(async (resolve, reject) => {
+  try {
+    const queryString = `INSERT INTO referrals SET ?`;
+    let queryBody = {
+      refer_id: uuidv4(),
+      user_referred_by: payload.user_id,
+      refer_to_email: payload.referEmail,
+      status: 'pending',
+      refer_code: payload.refer_code
+    };
+    let result = await mysql.query(request_id, db, queryString, queryBody);
+    if (result.affectedRows === 1) {
+      resolve();
+    } else {
+      reject({ code: 102, message: 'Internal server error while inserting into referral.' });
+    }
+  } catch (e) {
+    reject({ code: 102, message: { message: e.message, stack: e.stack } });
+  }
+ })
+};
+
+ 
+
+ module.exports.updateDashboardTable = (request_id, payload) => {
+  return new Promise(async (resolve, reject) => {
+   try {
+    const queryString = `UPDATE dashboard SET total_referred = ?, total_pending = ?, points = ? WHERE user_id = ?`;
+
+    const { total_referred, total_pending, points, user_id } = payload;
+    
+     let result = await mysql.query(request_id, db, queryString, [total_referred, total_referred, points, user_id]);
+     if (result.affectedRows === 1) {
+       resolve();
+     } else {
+       reject({ code: 102, message: 'Internal server error while inserting into referral.' });
+     }
+   } catch (e) {
+     reject({ code: 102, message: { message: e.message, stack: e.stack } });
+   }
+  })
+ };
+ 
+
+
 
 

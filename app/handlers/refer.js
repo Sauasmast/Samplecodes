@@ -4,6 +4,7 @@ const send_email = require(__base + '/app/modules/common/ses_sendemail');
 const bot = require(__base + '/app/modules/common/telegramBot');
 
 const addModule = require(__base + '/app/modules/refer/add');
+const utils = require(__base + '/app/modules/common/utils');
 // const editModule = require(__base + '/app/modules/refer/edit');
 
 
@@ -33,11 +34,14 @@ module.exports.sendWebReferral = async (req, res) => {
     await addModule.init(req.request_id, req.body);
     const emails  = req.body.emails;
     const loggedInEmail = 'rashul1996@gmail.com';
-    const user_id = '32459ac8-5793-41a9-80b1-06e82e11bad6';
+    const user_id = '0a5baf91-131e-4e8e-ac8b-61c9ccb1f5ab';
+
 
     const payload = {
       user_id,
-      loggedInEmail
+      loggedInEmail,
+      refer_code: loggedInEmail.split('@')[0],
+      emails
     }
 
     const responseBody = {
@@ -48,8 +52,8 @@ module.exports.sendWebReferral = async (req, res) => {
     let errorObj = {}
 
     // const email = req.authInfo.tokenData.email;
-    const refer_code = await addModule.createcode(req.request_id, payload);
-    payload.refer_code = refer_code;
+    // const refer_code = await addModule.createcode(req.request_id, payload);
+    // payload.refer_code = refer_code;
     
     for(let referEmail of emails) {
       payload.referEmail = referEmail;
@@ -65,13 +69,33 @@ module.exports.sendWebReferral = async (req, res) => {
       if(!responseBody.hasError) {
         errorObj = await addModule.insertIntoReferralTable(req.request_id, payload);
         responseBody.success.push(referEmail);
-        // send_email.sendemail(req.request_id, email, emails, codes);
-        bot.send(req.request_id, `Someone send a website referral - ${req.request_id}`);
-
       }
-
     }
+
+    //get refer config that is set in database
+    const user = await utils.getUserDetails(req.request_id, payload);
+    payload.refer_code = user.refer_code;
+
+    const refer_config = await utils.getReferConfig(req.request_id, payload);
+
+    const total_successful_referrals = responseBody.success.length;
+    const total_points = refer_config.pending_points * total_successful_referrals;
+    
+    const dashboard_history = await utils.getDashboardHistory(req.request_id, payload);
+
+    const updated_total_referred = dashboard_history.total_referred + total_successful_referrals;
+    const updated_total_pending = dashboard_history.total_pending + total_successful_referrals;
+    const updated_total_points = dashboard_history.points + total_points
+
+    payload.total_referred = updated_total_referred;
+    payload.total_pending = updated_total_pending;
+    payload.points = updated_total_points;
+
+    await addModule.updateDashboardTable(req.request_id, payload);
     delete responseBody.hasError;
+    bot.send(req.request_id, `Someone send a website referral - ${req.request_id}`);
+    await send_email.sendemail(req.request_id, {email: loggedInEmail, emails: responseBody.success, refer_code: payload.refer_code });
+
     response.success(req.request_id, responseBody,  res);
 
 
