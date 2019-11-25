@@ -46,5 +46,8 @@ module.exports = {
   referConfig: {
     accepted_points: 500,
     pending_points: 200
-  }
+  },
+  services: {
+    notification: process.env.NOTIFICATION_HOST,
+  },
 };

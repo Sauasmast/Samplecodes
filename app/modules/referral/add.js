@@ -31,13 +31,30 @@ module.exports.validation = (request_id, data) => {
   });
 };
 
-module.exports.checkIfReferCodeExists = (request_id, data) => {
+module.exports.getUserDetails = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let queryString = `SELECT w.user_id as user_id, d.points as points, d.total_pending as total_pending, d.total_activated as total_activated, d.total_referred as total_referred FROM web_users w JOIN dashboard d on w.refer_code =?`;
-      const { refer_code } = data;
-
+      let queryString = 'SELECT * from web_users WHERE refer_code =?';
+      const { refer_code } = payload;
       let results = await mysql.query(request_id, db, queryString, [refer_code]);
+      if(results.length >= 1) {
+        resolve(results[0]);
+      } else {
+        reject({ code: 103.1, custom_message: 'Email and Refer code does not match.' });
+      }
+    } catch(e) {
+      reject({ code: 102, message: 'Internal Server Error' });
+    }
+  })
+}
+
+module.exports.getDashboardDetails = (request_id, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let queryString = `SELECT * from dashboard where user_id =? `;
+      const { user_referred_by } = data;
+
+      let results = await mysql.query(request_id, db, queryString, [user_referred_by]);
       if(results.length >= 1) {
         resolve(results[0]);
       } else {
@@ -151,7 +168,7 @@ module.exports.insertIntoUsersTable = (request_id, payload) => {
         email: payload.email,
         status: 'pending',
         password: null,
-        refer_code: payload.refer_code,
+        refer_code: payload.email.split('@')[0],
         signup_token: uuidv4()
       };
       let result = await mysql.query(request_id, db, queryString, queryBody);
@@ -218,7 +235,7 @@ module.exports.updateDashboardTable = (request_id, payload) => {
     try {
     const queryString = 'UPDATE referrals SET status = ? WHERE refer_to_email = ?';
     const { email } = payload;
-    let result = await mysql.query(request_id, db, queryString, ['active', email]);
+    let result = await mysql.query(request_id, db, queryString, ['pending', email]);
     if (result.affectedRows === 1) {
       resolve();
     } else {

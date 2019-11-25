@@ -7,10 +7,10 @@ const db = 'provisioning';
 module.exports.getReferConfig = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
    try {
-     const queryString = `SELECT * FROM refer_config WHERE user_id = ?`;
-     const { user_id } = payload;
+     const queryString = `SELECT * FROM refer_config WHERE type = ?`;
+     const { user_type } = payload;
 
-     let result = await mysql.query(request_id, db, queryString, [user_id]);
+     let result = await mysql.query(request_id, db, queryString, [user_type]);
      if (result.length > 0) {
        resolve(result[0]);
      } else {
@@ -25,10 +25,10 @@ module.exports.getReferConfig = (request_id, payload) => {
  module.exports.getReferConfigOfUserReferred = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
    try {
-     const queryString = `SELECT * FROM refer_config WHERE user_id = ?`;
-     const { user_referred_by } = payload;
+     const queryString = `SELECT * FROM refer_config WHERE type = ?`;
+     const { user_type } = payload;
 
-     let result = await mysql.query(request_id, db, queryString, [user_referred_by]);
+     let result = await mysql.query(request_id, db, queryString, [user_type]);
      if (result.length > 0) {
        resolve(result[0]);
      } else {
@@ -50,7 +50,7 @@ module.exports.getReferConfig = (request_id, payload) => {
      if (result.length > 0) {
        resolve(result[0]);
      } else {
-       reject({ code: 102, custom_message: 'Internal server error while fetching into refer config.' });
+       reject({ code: 102, custom_message: 'Internal server error while fetching dashboard history.' });
      }
    } catch (e) {
      reject({ code: 102, message: { message: e.message, stack: e.stack } });
@@ -68,10 +68,20 @@ module.exports.getReferConfig = (request_id, payload) => {
      if (result.length > 0) {
        resolve(result[0]);
      } else {
-       reject({ code: 102, custom_message: 'Internal server error while fetching into refer config.' });
+       reject({ code: 102, custom_message: 'Internal server error while fetching into user details.' });
      }
    } catch (e) {
      reject({ code: 102, message: { message: e.message, stack: e.stack } });
    }
   })
  };
+
+ module.exports.generateCode = () => {
+  return new Promise((resolve, reject) => {
+    resolve(
+      Math.random()
+        .toString(36)
+        .slice(-6)
+    );
+  });
+};

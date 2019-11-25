@@ -6,13 +6,16 @@ const logger = require(__base + '/app/modules/common/logger');
 const referral = require(__base + '/app/handlers/referral');
 const authorization = require(__base + '/app/routes/config/authorization');
 
-const refer = require(__base + '/app/handlers/refer');
-const registration = require(__base + '/app/handlers/registration');
-const login = require(__base + '/app/handlers/login');
-
 const validate = require(__base + '/app/handlers/validate');
 const resend = require(__base + '/app/handlers/sendrefer/resendrefer');
 const del = require(__base + '/app/handlers/sendrefer/deleterefer');
+
+//added by Rashul for Web Referral
+const refer = require(__base + '/app/handlers/refer');
+const registration = require(__base + '/app/handlers/registration');
+const login = require(__base + '/app/handlers/login');
+const password = require(__base + '/app/handlers/password');
+
 
 exports = module.exports = app => {
 
@@ -40,14 +43,21 @@ exports = module.exports = app => {
     .post(registration.register)
     .put(registration.finalizeRegistration)
 
+  //send web referrals
   app.route(route.web_refer)
-    .post(refer.sendWebReferral);
+    .post(authorization.authCheck, refer.sendWebReferral);
 
   app.route(route.web_login)
     .post(login.handleLogin)
 
   app.route(route.refer_registration)
     .post(referral.registerWithReferral)
-
   
+  //Request code for password chage
+  app.route(route.password)
+    .post(authorization.authCheck, password.getCode)
+
+  //Validate code for password change
+  app.route(route.passwordCode)
+    .post(authorization.authCheck, password.validateCode)
 };

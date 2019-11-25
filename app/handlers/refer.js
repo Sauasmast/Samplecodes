@@ -31,12 +31,11 @@ module.exports.referpeople = async (req, res) => {
 
 module.exports.sendWebReferral = async (req, res) => {
   try {
+    const { user_id } = req.authInfo;
+
     await addModule.init(req.request_id, req.body);
     const emails  = req.body.emails;
-    const loggedInEmail = 'rashul1996@gmail.com';
-    const user_id = '0a5baf91-131e-4e8e-ac8b-61c9ccb1f5ab';
-
-
+    const loggedInEmail = req.authInfo.tokenData.email;
     const payload = {
       user_id,
       loggedInEmail,
@@ -75,6 +74,7 @@ module.exports.sendWebReferral = async (req, res) => {
     //get refer config that is set in database
     const user = await utils.getUserDetails(req.request_id, payload);
     payload.refer_code = user.refer_code;
+    payload.user_type = user.type;
 
     const refer_config = await utils.getReferConfig(req.request_id, payload);
 
@@ -90,6 +90,8 @@ module.exports.sendWebReferral = async (req, res) => {
     payload.total_referred = updated_total_referred;
     payload.total_pending = updated_total_pending;
     payload.points = updated_total_points;
+    
+    console.log(payload);
 
     await addModule.updateDashboardTable(req.request_id, payload);
     delete responseBody.hasError;

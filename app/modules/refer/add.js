@@ -112,7 +112,7 @@ module.exports.insertIntoReferralTable = (request_id, payload) => {
       refer_id: uuidv4(),
       user_referred_by: payload.user_id,
       refer_to_email: payload.referEmail,
-      status: 'pending',
+      status: 'sent',
       refer_code: payload.refer_code
     };
     let result = await mysql.query(request_id, db, queryString, queryBody);
@@ -161,7 +161,7 @@ module.exports.insertIntoReferralTable = (request_id, payload) => {
       refer_id: uuidv4(),
       user_referred_by: payload.user_id,
       refer_to_email: payload.referEmail,
-      status: 'pending',
+      status: 'sent',
       refer_code: payload.refer_code
     };
     let result = await mysql.query(request_id, db, queryString, queryBody);

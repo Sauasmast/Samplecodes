@@ -23,7 +23,7 @@ module.exports.register = async (req, res) => {
     const {user_id, signup_token} = await addModule.insertIntoUsersTable(req.request_id, payload);
     payload.user_id = user_id;
 
-    await addModule.insertintoReferConfigTable(req.request_id, payload);
+    // await addModule.insertintoReferConfigTable(req.request_id, payload);
     await addModule.insertIntoDashboardTable(req.request_id, payload);
 
     payload.user_id= user_id;

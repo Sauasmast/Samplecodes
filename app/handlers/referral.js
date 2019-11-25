@@ -34,27 +34,25 @@ module.exports.getdata = async (req, res) => {
 
 module.exports.registerWithReferral = async (req, res) => {
   try {
+
     await addModule.init(req.request_id, req.body);
-    const { email } = req.body;
-    const { refer_code } = req.query;
+    const { email, refer_code } = req.body;
     let payload = {
       email,
       refer_code,
     }
     await addModule.validation(req.request_id, payload);
-    const user = await addModule.checkIfReferCodeExists(req.request_id, payload);
-    payload.user_referred_by = user.user_id
+    await addModule.checkIfWebUserExist(req.request_id, payload);
+
+    const user_referred_by = await addModule.getUserDetails(req.request_id, payload);
+    payload.user_referred_by = user_referred_by.user_id;
+    payload.user_type = user_referred_by.type;
+
     await addModule.checkIfReferCodeIsValid(req.request_id, payload);
 
-    await addModule.checkIfWebUserExist(req.request_id, payload);
-    // await refer.sendWelcomeEmail(req.request_id, payload);
-    const {user_id, signup_token} = await addModule.insertIntoUsersTable(req.request_id, payload);
-    payload.user_id = user_id;
+    const user = await addModule.getDashboardDetails(req.request_id, payload);
 
-    await addModule.insertintoReferConfigTable(req.request_id, payload);
-    await addModule.insertIntoDashboardTable(req.request_id, payload);
-
-    //send id of user who referred
+    //send type of user who referred
     const refer_config = await utils.getReferConfigOfUserReferred(req.request_id, payload);
 
 
@@ -66,9 +64,14 @@ module.exports.registerWithReferral = async (req, res) => {
     await addModule.updateDashboardTable(req.request_id, payload);
     await addModule.updateReferralTable(req.request_id, payload);
 
+    // await refer.sendWelcomeEmail(req.request_id, payload);
+    const {user_id, signup_token} = await addModule.insertIntoUsersTable(req.request_id, payload);
+    payload.user_id = user_id;
+
+    // await addModule.insertintoReferConfigTable(req.request_id, payload);
+    await addModule.insertIntoDashboardTable(req.request_id, payload);
+
     payload.signup_token = signup_token;
-
-
     response.success(req.request_id, payload, res);
 
   } catch(e) {
