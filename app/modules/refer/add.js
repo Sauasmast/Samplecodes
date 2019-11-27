@@ -40,6 +40,24 @@ module.exports.validation = (request_id, data) => {
   });
 };
 
+module.exports.ensureUserExists = (request_id, payload) => {
+  return new Promise(async (resolve, reject) => {
+   
+    try {
+      const { user_id } = payload;
+      let queryString = 'SELECT * from web_users WHERE user_id =?';
+      let results = await mysql.query(request_id, db, queryString, [user_id]);
+      if(results.length === 1) {
+        resolve();
+      } else {
+        reject({ code: 102, custom_message: 'Invalid authorization token.' });
+      }
+    } catch(e) {
+      reject({ code: 102, message: { message: e.message, stack: e.stack } });
+    }
+  })
+}
+
 
 module.exports.checkIfUserExist = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {

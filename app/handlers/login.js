@@ -10,7 +10,7 @@ module.exports.handleLogin = async (req, res) => {
   try {
     const body = req.body;
     await loginModule.init(req.request_id, body);
-    let user = await loginModule.checkUserExist(req.request_id, body);
+    let user = await loginModule.checkUserExistAndIsActive(req.request_id, body);
     body.userPassword = user.password;
     await loginModule.comparePassword(req.request_id,body);
 

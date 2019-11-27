@@ -43,6 +43,8 @@ module.exports.sendWebReferral = async (req, res) => {
       emails
     }
 
+    await addModule.ensureUserExists(req.request_id, payload);
+    
     const responseBody = {
       success:[],
       error:[],

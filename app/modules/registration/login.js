@@ -13,14 +13,14 @@ module.exports.init = (request_id, data) => {
   });
 };
 
-module.exports.checkUserExist = (request_id, payload) => {
+module.exports.checkUserExistAndIsActive = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
-    let querystring = 'SELECT * FROM web_users WHERE email = ?';
+    let querystring = 'SELECT * FROM web_users WHERE email = ? AND status = ?';
     const { email } = payload
     try {
-      let result = await mysql.query(request_id, db, querystring, [email]);
+      let result = await mysql.query(request_id, db, querystring, [email, 'active']);
       if (result.length !== 1) {
-        reject({ code: 101, custom_message: 'Invalid email or password.' });
+        reject({ code: 101, custom_message: 'User does not exist.' });
       } else {
         resolve(result[0]);
       }

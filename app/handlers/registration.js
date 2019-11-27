@@ -42,14 +42,15 @@ module.exports.finalizeRegistration = async (req, res) => {
   try {
     await editModule.init(req.request_id, req.body);
 
-    const { email, password, signup_token } = req.body;
+    const { email, password, signup_token, user_referred_by } = req.body;
     const { id } = req.query;
 
     let payload = {
       email,
       user_id: id,
       password,
-      signup_token
+      signup_token,
+      user_referred_by
     }
     // await editModule.validation(req.request_id, payload);
     await editModule.authorizeSignupToken(req.request_id, payload)
@@ -58,7 +59,12 @@ module.exports.finalizeRegistration = async (req, res) => {
     payload.password = hashedPassword;
     // await refer.sendWelcomeEmail(req.request_id, payload);
 
-    await editModule.updateUsersTable(req.req, payload);
+    await editModule.updateUsersTable(req.request_id, payload);
+
+    if(user_referred_by) {
+      await editModule.verifyifUserReferredByExists(req.request_id, payload);
+      await editModule.updateReferralTable(req.request_id, payload);
+    }
 
     response.success(req.request_id, {email: email, user_id: id }, res);
 

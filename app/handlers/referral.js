@@ -72,7 +72,7 @@ module.exports.registerWithReferral = async (req, res) => {
     await addModule.insertIntoDashboardTable(req.request_id, payload);
 
     payload.signup_token = signup_token;
-    response.success(req.request_id, payload, res);
+    response.success(req.request_id, {user_id,signup_token,refer_code,user_referred_by}, res);
 
   } catch(e) {
     response.failure(req.request_id, e, res);

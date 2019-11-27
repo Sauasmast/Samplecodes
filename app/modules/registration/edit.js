@@ -100,4 +100,37 @@ module.exports.updateUsersTable = (request_id, payload) => {
   });
 };
 
+module.exports.verifyifUserReferredByExists = (request_id, payload) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let queryString = 'SELECT * from web_users WHERE  user_id =? ';
+      const { user_referred_by } = payload;
 
+      let results = await mysql.query(request_id, db, queryString, [user_referred_by]);
+      if(results.length === 1) {
+        resolve();
+      } else {
+        reject({ code: 103.1, custom_message: 'Invalid refer user.' });
+      }
+    } catch(e) {
+      reject({ code: 102, message: 'Internal Server Error' });
+    }
+  })
+}
+
+module.exports.updateReferralTable = (request_id, payload) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+    const queryString = 'UPDATE referrals SET status = ? WHERE refer_to_email = ?';
+    const { email } = payload;
+    let result = await mysql.query(request_id, db, queryString, ['active', email]);
+    if (result.affectedRows === 1) {
+      resolve();
+    } else {
+      reject({ code: 102, message: 'Internal server error while updating referral table.' });
+    }
+   } catch (e) {
+     reject({ code: 102, message: { message: e.message, stack: e.stack } });
+   }
+  })
+ };
