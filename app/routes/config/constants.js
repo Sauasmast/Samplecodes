@@ -12,7 +12,8 @@ const routes = {
   web_refer: '/api/web/refer',
   refer_registration: '/api/web/referral',
   password: '/api/web/password',
-  passwordCode: '/api/web/password/code'
+  passwordCode: '/api/web/password/code',
+  dashboard: '/api/web/dashboard'
 };
 
 module.exports = routes;

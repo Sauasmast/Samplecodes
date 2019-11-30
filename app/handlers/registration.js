@@ -2,8 +2,8 @@
 
 const refer = require(__base + '/app/modules/refer');
 const response = require(__base + '/app/modules/common/response');
-const send_email = require(__base + '/app/modules/common/ses_sendemail');
 const bot = require(__base + '/app/modules/common/telegramBot');
+const send_email = require(__base + '/app/modules/common/ses_sendemail');
 
 const addModule = require(__base + '/app/modules/registration/add');
 const editModule = require(__base + '/app/modules/registration/edit');
@@ -19,12 +19,13 @@ module.exports.register = async (req, res) => {
     }
     await addModule.validation(req.request_id, payload);
     await addModule.checkIfWebUserExist(req.request_id, payload);
-    // await refer.sendWelcomeEmail(req.request_id, payload);
     const {user_id, signup_token} = await addModule.insertIntoUsersTable(req.request_id, payload);
     payload.user_id = user_id;
 
     // await addModule.insertintoReferConfigTable(req.request_id, payload);
     await addModule.insertIntoDashboardTable(req.request_id, payload);
+
+    // await send_email.sendWelcomeEmail(req.request_id, payload);
 
     payload.user_id= user_id;
     payload.signup_token = signup_token;

@@ -15,6 +15,7 @@ const refer = require(__base + '/app/handlers/refer');
 const registration = require(__base + '/app/handlers/registration');
 const login = require(__base + '/app/handlers/login');
 const password = require(__base + '/app/handlers/password');
+const dashboard = require(__base + '/app/handlers/dashboard');
 
 
 exports = module.exports = app => {
@@ -60,4 +61,8 @@ exports = module.exports = app => {
   //Validate code for password change
   app.route(route.passwordCode)
     .post(authorization.authCheck, password.validateCode)
+
+  //dashboard info
+  app.route(route.dashboard)
+    .get(authorization.authCheck, dashboard.getDashboardInfo);
 };

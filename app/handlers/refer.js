@@ -93,8 +93,6 @@ module.exports.sendWebReferral = async (req, res) => {
     payload.total_pending = updated_total_pending;
     payload.points = updated_total_points;
     
-    console.log(payload);
-
     await addModule.updateDashboardTable(req.request_id, payload);
     delete responseBody.hasError;
     bot.send(req.request_id, `Someone send a website referral - ${req.request_id}`);

@@ -66,7 +66,8 @@ module.exports.sendemail = (request_id, payload) => {
           link: `www.gethazelnut.com/${payload.refer_code}`
         }
       };
-
+      console.log(msg);
+      
       sgMail.setApiKey(config.sendgrid.api_key);
       logger.debug(request_id, JSON.stringify(msg));
 
@@ -90,3 +91,41 @@ module.exports.sendemail = (request_id, payload) => {
     }
   });
 };
+
+
+module.exports.sendWelcomeEmail = (request_id, payload) => {
+  return new Promise(async (resolve, reject) => {
+    logger.info('Sending welcome email');
+    try {
+      const msg = {
+        to: payload.email,
+        from: config.email.from,
+        templateId: config.sendgrid.welcome_email_template_id,
+        dynamic_template_data: {
+          email: payload.email,
+          link: `www.gethazelnut.com/${payload.refer_code}`
+        }
+      };
+      sgMail.setApiKey(config.sendgrid.api_key);
+      logger.debug(request_id, JSON.stringify(msg));
+
+      sgMail.sendMultiple(msg, function(err, data) {
+        console.log(err, null);
+        if (err) {
+          console.log('err', err);
+          reject({
+            code: 400,
+            message: { message: err.message, stack: err.stack }
+          });
+        } else {
+          logger.debug(request_id, JSON.stringify(data));
+          bot.send(request_id, `Refer email sent - ${request_id}`);
+
+          resolve();
+        }
+      });
+    } catch (e) {
+      reject({ code: 400, message: { message: e.message, stack: e.stack } });
+    }
+  });
+}
