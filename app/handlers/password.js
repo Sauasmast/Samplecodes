@@ -3,6 +3,7 @@
 const bot = require(__base + '/app/modules/common/telegramBot');
 const utils = require(__base + '/app/modules/common/utils');
 const response = require(__base + '/app/modules/common/response');
+const send_email = require(__base + '/app/modules/common/ses_sendemail');
 
 const editModule = require(__base + '/app/modules/password/edit');
 
@@ -16,10 +17,13 @@ module.exports.getCode = async (req, res) => {
       user_id, email
     }
     await editModule.validation(req.request_id, payload);
-    await editModule.checkIfUserExists(req.request_id, payload);
+    const user = await editModule.checkIfUserExists(req.request_id, payload);
 
     let new_code = await utils.generateCode();
-    payload.new_code = new_code
+    payload.new_code = new_code;
+
+    // payload.name = user.first_name
+    
     //check if active password change code exists
     const codeExists = await editModule.checkIfAnyCodeExists(req.request_id, payload);
     if(codeExists) {
@@ -27,7 +31,7 @@ module.exports.getCode = async (req, res) => {
       await editModule.softDelete(req.request_id, payload);
     }    
     await editModule.insertIntoRecoveryPassword(req.request_id, payload);
-    // await editModule.sendEmail(req.request_id, payload);
+    await send_email.sendResetPasswordEmail(req.request_id, payload);
     bot.send(req.request_id, `Someone requested password change code - ${req.request_id}`);
 
     response.success(req.request_id, payload, res);

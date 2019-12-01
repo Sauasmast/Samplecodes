@@ -25,11 +25,11 @@ module.exports.register = async (req, res) => {
     // await addModule.insertintoReferConfigTable(req.request_id, payload);
     await addModule.insertIntoDashboardTable(req.request_id, payload);
 
-    // await send_email.sendWelcomeEmail(req.request_id, payload);
+    await send_email.sendHelloEmail(req.request_id, payload);
 
     payload.user_id= user_id;
     payload.signup_token = signup_token;
-
+    bot.send(req.request_id, `Hello email sent - ${req.request_id}`);
 
     response.success(req.request_id, payload, res);
 
@@ -55,8 +55,9 @@ module.exports.finalizeRegistration = async (req, res) => {
     }
     // await editModule.validation(req.request_id, payload);
     await editModule.authorizeSignupToken(req.request_id, payload)
-    await editModule.checkIfWebUserExist(req.request_id, payload);
+    const {refer_code} = await editModule.checkIfWebUserExist(req.request_id, payload);
     const hashedPassword = await editModule.hashPassword(req.request_id, payload);
+    payload.refer_code = refer_code;
     payload.password = hashedPassword;
     // await refer.sendWelcomeEmail(req.request_id, payload);
 
@@ -66,6 +67,9 @@ module.exports.finalizeRegistration = async (req, res) => {
       await editModule.verifyifUserReferredByExists(req.request_id, payload);
       await editModule.updateReferralTable(req.request_id, payload);
     }
+
+    await send_email.sendWelcomeEmail(req.request_id, payload);
+    bot.send(req.request_id, `Welcome email sent - ${req.request_id}`);
 
     response.success(req.request_id, {email: email, user_id: id }, res);
 

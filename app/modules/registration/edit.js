@@ -49,7 +49,7 @@ module.exports.checkIfWebUserExist = (request_id, payload) => {
 
       let results = await mysql.query(request_id, db, queryString, [email, user_id]);
       if(results.length === 1) {
-        resolve();
+        resolve(results[0]);
       } else {
         reject({ code: 103.1, custom_message: 'User has not registered yet. Please register the account' });
       }
