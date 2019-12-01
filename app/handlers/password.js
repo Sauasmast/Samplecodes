@@ -7,7 +7,25 @@ const send_email = require(__base + '/app/modules/common/ses_sendemail');
 
 const editModule = require(__base + '/app/modules/password/edit');
 const addModule = require(__base + '/app/modules/password/add');
+const infoModule = require(__base + '/app/modules/password/info');
 
+
+module.exports.getUserDetails = async (req, res) => {
+  try {
+    await infoModule.init(req.request_id, req.query);
+    await infoModule.validation(req.request_id, req.query);
+    const { signup_token } = req.query;
+    const payload = {signup_token}
+    const user = await infoModule.getUserInfo(req.request_id, payload);
+    payload.email = user.email;
+    payload.status = user.status;
+    response.success(req.request_id, payload, res);
+
+  } catch(e) {
+    response.failure(req.request_id, e, res);
+
+  }
+}
 
 module.exports.getCode = async (req, res) => {
 

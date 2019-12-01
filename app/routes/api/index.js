@@ -56,6 +56,7 @@ exports = module.exports = app => {
   
   //Request code for password change
   app.route(route.password)
+    .get(password.getUserDetails)
     .post(authorization.authCheck, password.getCode)
     .put(authorization.authCheck, password.changePassword);
 
