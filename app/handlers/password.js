@@ -19,6 +19,7 @@ module.exports.getUserDetails = async (req, res) => {
     const user = await infoModule.getUserInfo(req.request_id, payload);
     payload.email = user.email;
     payload.status = user.status;
+    payload.user_id = user.user_id;
     response.success(req.request_id, payload, res);
 
   } catch(e) {

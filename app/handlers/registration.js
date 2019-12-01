@@ -43,12 +43,12 @@ module.exports.finalizeRegistration = async (req, res) => {
   try {
     await editModule.init(req.request_id, req.body);
 
-    const { email, password, signup_token, user_referred_by } = req.body;
-    const { id } = req.query;
+    const { email, password, signup_token, user_referred_by, user_id } = req.body;
+    // const { id } = req.query;
 
     let payload = {
       email,
-      user_id: id,
+      user_id,
       password,
       signup_token,
       user_referred_by
@@ -71,7 +71,7 @@ module.exports.finalizeRegistration = async (req, res) => {
     await send_email.sendWelcomeEmail(req.request_id, payload);
     bot.send(req.request_id, `Welcome email sent - ${req.request_id}`);
 
-    response.success(req.request_id, {email: email, user_id: id }, res);
+    response.success(req.request_id, {email: email, user_id }, res);
 
   } catch(e) {
     response.failure(req.request_id, e, res);
