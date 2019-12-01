@@ -41,8 +41,8 @@ module.exports = {
     api_key: process.env.SENDGRID_API_KEY,
     welcome_email_template_id: process.env.WELCOME_EMAIL_TEMPLATE_ID,
     hello_email_template_id: process.env.HELLO_EMAIL_TEMPLATE_ID,
-    forgot_password_email_template_id: process.env.FORGOT_PASSWORD_EMAIL_TEMPLATE
-
+    forgot_password_email_template_id: process.env.FORGOT_PASSWORD_EMAIL_TEMPLATE,
+    password_changed_email_template_id: process.env.PASSWORD_CHANGED_EMAIL_TEMPLATE
   },
   telegram: {
     bot: process.env.TELEGRAM_WEBHOOK_URL

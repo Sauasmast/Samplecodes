@@ -54,13 +54,15 @@ exports = module.exports = app => {
   app.route(route.refer_registration)
     .post(referral.registerWithReferral)
   
-  //Request code for password chage
+  //Request code for password change
   app.route(route.password)
     .post(authorization.authCheck, password.getCode)
+    .put(authorization.authCheck, password.changePassword);
 
   //Validate code for password change
   app.route(route.passwordCode)
     .post(authorization.authCheck, password.validateCode)
+
 
   //dashboard info
   app.route(route.dashboard)
