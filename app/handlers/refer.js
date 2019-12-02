@@ -96,7 +96,9 @@ module.exports.sendWebReferral = async (req, res) => {
     await addModule.updateDashboardTable(req.request_id, payload);
     delete responseBody.hasError;
     bot.send(req.request_id, `Someone send a website referral - ${req.request_id}`);
-    await send_email.sendemail(req.request_id, {email: loggedInEmail, emails: responseBody.success, refer_code: payload.refer_code });
+    if(responseBody.success.length > 0) {
+      await send_email.sendemail(req.request_id, {email: loggedInEmail, emails: responseBody.success, refer_code: payload.refer_code });
+    }
 
     response.success(req.request_id, responseBody,  res);
 
