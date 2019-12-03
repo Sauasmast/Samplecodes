@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "node.boilerplate",
   "main": "server.js",
+  "engines": {
+    "node": "12.13.0"
+  },
   "scripts": {
     "start": "node -r dotenv/config server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
