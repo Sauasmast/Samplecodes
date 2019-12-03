@@ -2,6 +2,7 @@
 const logger = require(__base + '/app/modules/common/logger');
 const response = require(__base + '/app/modules/common/response');
 const utils = require(__base + '/app/modules/common/utils');
+const send_email = require(__base + '/app/modules/common/ses_sendemail');
 
 const addModule = require(__base + '/app/modules/referral/add');
 
@@ -70,9 +71,12 @@ module.exports.registerWithReferral = async (req, res) => {
 
     // await addModule.insertintoReferConfigTable(req.request_id, payload);
     await addModule.insertIntoDashboardTable(req.request_id, payload);
-
     payload.signup_token = signup_token;
-    response.success(req.request_id, {user_id,signup_token,refer_code,user_referred_by}, res);
+
+    await send_email.sendHelloEmail(req.request_id, payload);
+
+
+    response.success(req.request_id, payload, res);
 
   } catch(e) {
     response.failure(req.request_id, e, res);
