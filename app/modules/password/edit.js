@@ -1,5 +1,7 @@
 const axios = require('axios');
 const moment = require('moment');
+const bcrypt = require('bcrypt');
+const salt_rounds = 10;
 
 const mysql = require(__base + '/app/modules/common/mysql.js');
 const db = 'provisioning';
@@ -52,6 +54,24 @@ module.exports.checkIfUserExists = (request_id, payload) => {
     } catch (e) {
       reject({ code: 102, message: { message: e.message, stack: e.stack } });
     }
+  });
+};
+
+// Hash Password during registration
+module.exports.hashPassword = (request_id, payload) => {
+  return new Promise((resolve, reject) => {
+    try {
+      bcrypt.genSalt(15, (err, salt) => {
+        if (err) reject({ status: 102, message: 'Internal Server error' });
+        bcrypt.hash(payload.password, salt, (err, hash) => {
+          if (err) reject({ status: 102, message: 'Internal Server error' });
+          resolve(hash);
+        });
+      });
+    } catch(err) {
+      reject({ code: 102, custom_message: 'Issue while hashing password.' });
+    }
+
   });
 };
 
