@@ -54,4 +54,7 @@ module.exports = {
   services: {
     notification: process.env.NOTIFICATION_HOST,
   },
+  marketing_trigger_days: {
+    
+  }
 };

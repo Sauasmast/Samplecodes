@@ -1,3 +1,5 @@
+const uuidv4 = require('uuid/v4');
+
 const refer = require(__base + '/app/modules/refer');
 const response = require(__base + '/app/modules/common/response');
 const send_email = require(__base + '/app/modules/common/ses_sendemail');
@@ -66,7 +68,6 @@ module.exports.sendWebReferral = async (req, res) => {
         errorObj = await addModule.checkIfAlreadyReferredBySameUser(req.request_id, payload);
         handleErrorChecking(errorObj, responseBody);
       }
-
       if(!responseBody.hasError) {
         errorObj = await addModule.insertIntoReferralTable(req.request_id, payload);
         responseBody.success.push(referEmail);
@@ -97,7 +98,9 @@ module.exports.sendWebReferral = async (req, res) => {
     delete responseBody.hasError;
     bot.send(req.request_id, `Someone send a website referral - ${req.request_id}`);
     if(responseBody.success.length > 0) {
-      await send_email.sendemail(req.request_id, {email: loggedInEmail, emails: responseBody.success, refer_code: payload.refer_code });
+      responseBody.success.forEach(async email => {
+        await send_email.sendemail(req.request_id, {email: loggedInEmail, toEmail: email, refer_code: payload.refer_code });
+      })
     }
 
     response.success(req.request_id, responseBody,  res);

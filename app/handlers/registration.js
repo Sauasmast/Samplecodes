@@ -21,14 +21,12 @@ module.exports.register = async (req, res) => {
     await addModule.checkIfWebUserExist(req.request_id, payload);
     const {user_id, signup_token} = await addModule.insertIntoUsersTable(req.request_id, payload);
     payload.user_id = user_id;
+    payload.signup_token = signup_token;
 
     // await addModule.insertintoReferConfigTable(req.request_id, payload);
     await addModule.insertIntoDashboardTable(req.request_id, payload);
-
     await send_email.sendHelloEmail(req.request_id, payload);
 
-    payload.user_id= user_id;
-    payload.signup_token = signup_token;
     bot.send(req.request_id, `Hello email sent - ${req.request_id}`);
 
     response.success(req.request_id, payload, res);

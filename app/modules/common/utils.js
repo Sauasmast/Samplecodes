@@ -1,4 +1,5 @@
 'use strict';
+const uuid = require('uuid/v4');
 
 const mysql = require(__base + '/app/modules/common/mysql');
 
@@ -83,5 +84,11 @@ module.exports.getReferConfig = (request_id, payload) => {
         .toString(36)
         .slice(-6)
     );
+  });
+};
+
+module.exports.generatePasswordCode = () => {
+  return new Promise((resolve, reject) => {
+    resolve(uuid());
   });
 };

@@ -30,17 +30,19 @@ module.exports.getUserDetails = async (req, res) => {
 
 module.exports.getCode = async (req, res) => {
 
-  const { user_id} = req.authInfo;
+  // const { user_id} = req.authInfo;
   const { email } = req.body;
   try {
-    await editModule.init(req.request_id, {user_id, email});
-    const payload = {
-      user_id, email
-    }
-    await editModule.validation(req.request_id, payload);
-    const user = await editModule.checkIfUserExists(req.request_id, payload);
+    await editModule.init(req.request_id, {email});
+    await editModule.validation(req.request_id, {email});
+    const user = await editModule.checkIfUserExists(req.request_id, {email});
 
-    let new_code = await utils.generateCode();
+    const payload = {
+      user_id:user.user_id,
+      email: user.email
+    }
+
+    let new_code = await utils.generatePasswordCode();
     payload.new_code = new_code;
 
     // payload.name = user.first_name
@@ -62,18 +64,20 @@ module.exports.getCode = async (req, res) => {
 };
 
 module.exports.validateCode = async (req, res) => {
-  const { user_id } = req.authInfo;
-  const { email, code } = req.body;
+  // const { user_id } = req.authInfo;
+  const { code } = req.query;
 
   try {
-    const payload = { user_id, email, code};
-    await editModule.validateCode(req.request_id, payload);
-    let data = await editModule.checkIfCodeExists(req.request_id, payload);
+    await editModule.checkIfCodeIsProvided(req.request_id, {code})
+    await editModule.validateCode(req.request_id, {code});
+    let data = await editModule.checkIfCodeExists(req.request_id, {code});
+    const payload = { email: data.email, code};
+
     payload.created_at = data.created_at;
     payload.id = data.id;
     await editModule.checkExpiry(req.request_id, payload);
 
-    response.success(req.request_id, {message: 'Password change code validated'}, res);
+    response.success(req.request_id, {email: data.email}, res);
   } catch (e) {
     response.failure(req.request_id, e, res);
   }

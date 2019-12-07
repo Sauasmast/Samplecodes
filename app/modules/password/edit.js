@@ -9,7 +9,18 @@ const uuid = require('uuid/v4');
 
 module.exports.init = (request_id, data) => {
   return new Promise((resolve, reject) => {
-    if(typeof data.email !== 'undefined' || typeof data.user_id !== undefined) {
+    if(typeof data.email !== 'undefined') {
+      resolve();
+    } else {
+      reject({ code: 103.2, custom_message: 'Attributes validation incorrect.' });
+    }
+  });
+};
+
+
+module.exports.checkIfCodeIsProvided = (request_id, data) => {
+  return new Promise((resolve, reject) => {
+    if(typeof data.code !== 'undefined') {
       resolve();
     } else {
       reject({ code: 103.2, custom_message: 'Attributes validation incorrect.' });
@@ -30,7 +41,7 @@ module.exports.validation = (request_id, data) => {
 
 module.exports.checkIfUserExists = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
-    let querystring = 'SELECT * FROM web_users WHERE email = ? AND user_id = ?';
+    let querystring = 'SELECT * FROM web_users WHERE email = ?';
     try {
       let result = await mysql.query(request_id, db, querystring, [payload.email, payload.user_id]);
       if (result.length !== 1) {
@@ -102,19 +113,19 @@ module.exports.insertIntoRecoveryPassword = (request_id, payload) => {
         reject({ code: 102, custom_message: 'Internal Server Error' });
       }
     } catch (e) {
-      reject(e);
+      reject({ code: 102, message: 'Internal Server Error' });
     }
   });
 };
 
 module.exports.validateCode = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
-    if (payload.code.length === 6) {
+    if (payload.code.length === 36) {
       resolve();
     } else {
       reject({
         code: 103,
-        custom_message: 'Email and password validation code does not match.'
+        custom_message: 'Password validation code does not match.'
       });
     }
   });
@@ -133,7 +144,7 @@ module.exports.checkIfAnyCodeExists = (request_id, payload) => {
         resolve(false);
       }
     } catch (e) {
-      reject(e);
+      reject({ code: 102, message: 'Internal Server Error' });
     }
   });
 };
@@ -141,12 +152,11 @@ module.exports.checkIfAnyCodeExists = (request_id, payload) => {
 
 module.exports.checkIfCodeExists = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
-    const { email, code } = payload;
+    const { code } = payload;
     let queryString =
-      'Select * from recover_password Where email = ? AND code = ? AND soft_deleted = 0';
+      'Select * from recover_password  WHERE code = ? AND soft_deleted = 0';
     try {
       let result = await mysql.query(request_id, db, queryString, [
-        email,
         code
       ]);
       if (result.length == 1) {
@@ -158,7 +168,7 @@ module.exports.checkIfCodeExists = (request_id, payload) => {
         });
       }
     } catch (e) {
-      reject(e);
+      reject({ code: 102, message: 'Internal Server Error' });
     }
   });
 };
@@ -180,7 +190,7 @@ module.exports.checkExpiry = (request_id, payload) => {
           reject({ code: 102, custom_message: 'Internal Server Error' });
         }
       } catch (e) {
-        reject(e);
+        reject({ code: 102, message: 'Internal Server Error' });
       }
     } else {
       resolve();
@@ -200,7 +210,7 @@ module.exports.softDelete = (request_id, payload) => {
         reject({ code: 102, custom_message: 'Internal Server Error' });
       }
     } catch (e) {
-      reject(e);
+      reject({ code: 102, message: 'Internal Server Error' });
     }
   });
 };

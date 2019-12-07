@@ -10,16 +10,15 @@ module.exports.sendemail = (request_id, payload) => {
     logger.info('Sending a website referral email');
     try {
       const msg = {
-        to: payload.emails,
+        to: payload.toEmail,
         from: config.email.from,
         templateId: config.sendgrid.email_refer_template_id,
         dynamic_template_data: {
           email: payload.email,
-          link: `www.gethazelnut.com/${payload.refer_code}`
+          accept_invite_link: `https://hazelnut-web.herokuapp.com/referral/${payload.toEmail}/${payload.refer_code}`
+          // link: `www.gethazelnut.com/${payload.refer_code}`
         }
       };
-      console.log(msg);
-      
       sgMail.setApiKey(config.sendgrid.api_key);
       logger.debug(request_id, JSON.stringify(msg));
 
@@ -39,6 +38,7 @@ module.exports.sendemail = (request_id, payload) => {
         }
       });
     } catch (e) {
+      console.log(e);
       reject({ code: 400, message: { message: e.message, stack: e.stack } });
     }
   });
@@ -46,7 +46,7 @@ module.exports.sendemail = (request_id, payload) => {
 
 module.exports.sendHelloEmail = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
-    logger.info('Sending welcome email');
+    logger.info('sendHelloEmail');
     try {
       const msg = {
         to: payload.email,
@@ -54,10 +54,11 @@ module.exports.sendHelloEmail = (request_id, payload) => {
         templateId: config.sendgrid.hello_email_template_id,
         dynamic_template_data: {
           email: payload.email,
-          password_link: `https://hazelnut-web.herokuapp.com/signup`,
+          password_link: `https://hazelnut-web.herokuapp.com/signup/${payload.signup_token}`,
           dashboard_link: 'https://hazelnut-web.herokuapp.com/dashboard'
         }
       };
+      console.log(msg);
       sgMail.setApiKey(config.sendgrid.api_key);
       logger.debug(request_id, JSON.stringify(msg));
 
@@ -76,6 +77,7 @@ module.exports.sendHelloEmail = (request_id, payload) => {
         }
       });
     } catch (e) {
+      console.log(e);
       reject({ code: 400, message: { message: e.message, stack: e.stack } });
     }
   });
@@ -120,7 +122,7 @@ module.exports.sendWelcomeEmail = (request_id, payload) => {
 
 module.exports.sendResetPasswordEmail = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
-    logger.info('Sending welcome email');
+    logger.info('sendResetPasswordEmail');
     try {
       const msg = {
         to: payload.email,
@@ -128,7 +130,8 @@ module.exports.sendResetPasswordEmail = (request_id, payload) => {
         templateId: config.sendgrid.forgot_password_email_template_id,
         dynamic_template_data: {
           name: payload.name ? payload.name : '',
-          reset_password_link: `https://hazelnut-web.herokuapp.com/password/reset/${payload.new_code}`
+          reset_password_link: `https://hazelnut-web.herokuapp.com/password/code?code=${payload.new_code}`
+          // reset_password_link: `http://localhost:3001/api/web/password/code?code=${payload.new_code}`
         }
       };
       sgMail.setApiKey(config.sendgrid.api_key);

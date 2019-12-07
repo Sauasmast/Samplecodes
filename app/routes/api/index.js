@@ -57,12 +57,12 @@ exports = module.exports = app => {
   //Request code for password change
   app.route(route.password)
     .get(password.getUserDetails)
-    .post(authorization.authCheck, password.getCode)
-    .put(authorization.authCheck, password.changePassword);
+    .post(password.getCode)
+    .put(password.changePassword);
 
   //Validate code for password change
   app.route(route.passwordCode)
-    .post(authorization.authCheck, password.validateCode)
+    .get(password.validateCode)
 
 
   //dashboard info
