@@ -75,8 +75,14 @@ module.exports.registerWithReferral = async (req, res) => {
 
     await send_email.sendHelloEmail(req.request_id, payload);
 
-
-    response.success(req.request_id, payload, res);
+    const response_body= {
+      email,
+      refer_code,
+      user_referred_by: user_referred_by.user_id,
+      user_id,
+      signup_token
+    }
+    response.success(req.request_id, response_body, res);
 
   } catch(e) {
     response.failure(req.request_id, e, res);

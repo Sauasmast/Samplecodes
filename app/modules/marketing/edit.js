@@ -10,7 +10,6 @@ const db = 'provisioning';
 module.exports.updateFacebookEmailList = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(payload);
       const queryString = 'UPDATE marketing SET is_facebook_email_sent = ? WHERE email = ?';
       const { email } = payload;
 
