@@ -53,7 +53,6 @@ module.exports.finalizeRegistration = async (req, res) => {
     }
     // await editModule.validation(req.request_id, payload);
     await editModule.authorizeSignupToken(req.request_id, payload)
-    const {refer_code} = await editModule.checkIfWebUserExist(req.request_id, payload);
     const hashedPassword = await editModule.hashPassword(req.request_id, payload);
     payload.refer_code = refer_code;
     payload.password = hashedPassword;
@@ -65,7 +64,6 @@ module.exports.finalizeRegistration = async (req, res) => {
       await editModule.verifyifUserReferredByExists(req.request_id, payload);
       await editModule.updateReferralTable(req.request_id, payload);
     }
-
     await send_email.sendWelcomeEmail(req.request_id, payload);
     bot.send(req.request_id, `Welcome email sent - ${req.request_id}`);
 

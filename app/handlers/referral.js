@@ -73,7 +73,7 @@ module.exports.registerWithReferral = async (req, res) => {
     await addModule.insertIntoDashboardTable(req.request_id, payload);
     payload.signup_token = signup_token;
 
-    await send_email.sendHelloEmail(req.request_id, payload);
+    // await send_email.sendHelloEmail(req.request_id, payload);
 
     const response_body= {
       email,

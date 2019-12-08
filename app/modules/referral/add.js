@@ -216,6 +216,7 @@ module.exports.insertIntoDashboardTable = (request_id, payload) => {
 module.exports.updateDashboardTable = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log(payload);
     const queryString = 'UPDATE dashboard SET  total_pending = ?, total_activated =?, points =?, total_referred =? WHERE user_id = ?';
     const { total_points, total_activated, total_pending, user_referred_by, total_referred } = payload;
     let result = await mysql.query(request_id, db, queryString, [total_pending, total_activated, total_points, total_referred, user_referred_by ]);
