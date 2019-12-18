@@ -100,6 +100,26 @@ module.exports.updateUsersTable = (request_id, payload) => {
   });
 };
 
+module.exports.updateMarketingTable = (request_id, payload) => {
+  return new Promise(async (resolve, reject) => {
+    const queryString = 'UPDATE marketing SET account_status = ? WHERE user_id = ?';
+
+    try {
+      const { user_id } = payload;
+
+      let result = await mysql.query(request_id, db, queryString, ['active',  user_id]);
+      if (result.affectedRows === 1) {
+        resolve();
+      } else {
+        reject({ code: 102, message: 'Internal server error while inserting users.' });
+      }
+    } catch (e) {
+      console.log(e);
+      reject({ code: 102, custom_message: 'Internal Server Error' });
+    }
+  });
+};
+
 module.exports.verifyifUserReferredByExists = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
     try {

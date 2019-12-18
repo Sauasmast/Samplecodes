@@ -25,9 +25,10 @@ module.exports.register = async (req, res) => {
 
     // await addModule.insertintoReferConfigTable(req.request_id, payload);
     await addModule.insertIntoDashboardTable(req.request_id, payload);
-    await send_email.sendHelloEmail(req.request_id, payload);
+    await addModule.insertIntoMarketingTable(req.request_id, payload);
 
-    bot.send(req.request_id, `Hello email sent - ${req.request_id}`);
+    // await send_email.sendHelloEmail(req.request_id, payload);
+    bot.send(req.request_id, `Someone started registration - ${req.request_id}`);
 
     response.success(req.request_id, payload, res);
 
@@ -49,23 +50,24 @@ module.exports.finalizeRegistration = async (req, res) => {
       user_id,
       password,
       signup_token,
-      user_referred_by
+      user_referred_by,
+      refer_code: email.split('@')[0]
     }
     // await editModule.validation(req.request_id, payload);
     await editModule.authorizeSignupToken(req.request_id, payload)
     const hashedPassword = await editModule.hashPassword(req.request_id, payload);
-    payload.refer_code = refer_code;
     payload.password = hashedPassword;
     // await refer.sendWelcomeEmail(req.request_id, payload);
 
     await editModule.updateUsersTable(req.request_id, payload);
+    await editModule.updateMarketingTable(req.request_id, payload);
 
     if(user_referred_by) {
       await editModule.verifyifUserReferredByExists(req.request_id, payload);
       await editModule.updateReferralTable(req.request_id, payload);
     }
-    await send_email.sendWelcomeEmail(req.request_id, payload);
-    bot.send(req.request_id, `Welcome email sent - ${req.request_id}`);
+    // await send_email.sendWelcomeEmail(req.request_id, payload);
+    bot.send(req.request_id, `Someone finalized registration - ${req.request_id}`);
 
     response.success(req.request_id, {email: email, user_id }, res);
 

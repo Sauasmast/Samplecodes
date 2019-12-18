@@ -23,11 +23,13 @@ const init = () => {
     const req = { request_id: uuid() };
 
     const payload = {
-      facebook_email_schedule: moment(current_time).subtract(3,'days').format("YYYY-MM-DD HH:MM:SS")
+      facebook_email_schedule: moment(current_time).subtract(3,'days').format("YYYY-MM-DD HH:MM:SS"),
+      books_for_you_email_list: moment(current_time).subtract(7,'days').format("YYYY-MM-DD HH:MM:SS")
     }
     
     const facebook_email_list = await marketingInfoModule.getFacebookEmailList(req, payload);
     
+    const books_for_you_email_list = await marketingInfoModule.getBooksforYouEmaillist(req, payload);
 
     if(facebook_email_list.length > 0) {
       //send facebook marketing email
@@ -35,8 +37,17 @@ const init = () => {
       facebook_email_list.forEach(async email => {
         await marketingEditModule.updateFacebookEmailList(req, {email});
       })
-
     }
+
+    if(books_for_you_email_list.length > 0) {
+      //send facebook marketing email
+      await notification.booksForYouEmail(req.request_id, {emails: facebook_email_list});
+      books_for_you_email_list.forEach(async email => {
+        await marketingEditModule.updateBooksForYouEmailList(req, {email});
+      })
+    }
+
+    
 
     logger.info('Ending background job');
 
@@ -45,4 +56,30 @@ const init = () => {
   job.start();
 }
 
-init();
+const initReferReminder = () => {
+  // const job = new CronJob('0 8,12,16,20 * * *', async function() {
+  const job = new CronJob('00 22 * * *', async function() {
+
+    logger.info('Initiating refer reminder daily cron job');
+
+    const current_time = momentTZ().tz("America/New_York").format('YYYY-MM-DD');
+    const req = { request_id: uuid() };
+
+    const payload = {
+      day_1_reminder_email_schedule:  moment(current_time).subtract(1,'days').format("YYYY-MM-DD HH:MM:SS")
+    }
+    const refer_reminder_email_list = await  marketingInfoModule.getReferReminderEmailList(req, payload);
+    refer_reminder_email_list.forEach(async l => {
+      await notification.day1ReferReminderEmail(req.request_id, {email: l.email, refer_code: l.refer_code});
+      await marketingEditModule.updateReferReminderList(req, {email})
+    })
+
+    logger.info('Ending background job');
+
+  },  null, true, 'America/New_York');
+  
+  job.start();
+}
+
+// init();
+initReferReminder()

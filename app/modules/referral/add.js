@@ -247,3 +247,29 @@ module.exports.updateDashboardTable = (request_id, payload) => {
    }
   })
  };
+
+ module.exports.insertIntoMarketingTable = (request_id, payload) => {
+  return new Promise(async (resolve, reject) => {
+    const queryString = `INSERT INTO marketing SET ?`;
+   
+    try {
+      let queryBody = {
+        user_id: payload.user_id,
+        account_status: 'pending',
+        is_facebook_email_sent: 0,
+        is_intro_email_sent: 0,
+        is_reminder_email_sent: 0,
+        email: payload.email
+      };
+      let result = await mysql.query(request_id, db, queryString, queryBody);
+      
+      if (result.affectedRows === 1) {
+        resolve(queryBody);
+      } else {
+        reject({ code: 102, message: 'User with that email already exists.' });
+      }
+    } catch (e) {
+      reject({ code: 102, custom_message: 'Internal Server Error' });
+    }
+  });
+};

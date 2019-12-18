@@ -31,7 +31,7 @@ app.use(log4js.connectLogger(http, { level: 'auto' }));
 
 // initialize - routes
 require(__base + '/app/routes/index')(app);
-// require(__base + '/app/init/cron');
+require(__base + '/app/init/cron');
 
 
 /// catch 404 and forward to error handler

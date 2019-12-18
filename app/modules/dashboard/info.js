@@ -108,11 +108,11 @@ module.exports.getTotalUsers = (request_id, payload) => {
 module.exports.getUserRanking = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let queryString = 'SELECT COUNT(*) as ranking from dashboard where points > ?';
-      const { points } = payload;
+      let queryString = 'SELECT COUNT(*) as ranking from dashboard where points >= ?';
+      const { dashboardInfo } = payload;
 
-      let results = await mysql.query(request_id, db, queryString, [points]);
-      resolve(results[0].ranking + 1)
+      let results = await mysql.query(request_id, db, queryString, [dashboardInfo.points]);
+      resolve(results[0].ranking)
     } catch(e) {
       console.log(e)
       reject({ code: 102, message: 'Internal Server Error' });

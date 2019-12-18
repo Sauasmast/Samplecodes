@@ -16,7 +16,6 @@ module.exports.sendemail = (request_id, payload) => {
         dynamic_template_data: {
           email: payload.email,
           accept_invite_link: `https://hazelnut-web.herokuapp.com/referral/${payload.toEmail}/${payload.refer_code}`
-          // link: `www.gethazelnut.com/${payload.refer_code}`
         }
       };
       sgMail.setApiKey(config.sendgrid.api_key);
@@ -58,7 +57,6 @@ module.exports.sendHelloEmail = (request_id, payload) => {
           dashboard_link: 'https://hazelnut-web.herokuapp.com/dashboard'
         }
       };
-      console.log(msg);
       sgMail.setApiKey(config.sendgrid.api_key);
       logger.debug(request_id, JSON.stringify(msg));
 
@@ -192,3 +190,6 @@ module.exports.sendPasswordChangedEmail = (request_id, payload) => {
     }
   });
 }
+
+
+
