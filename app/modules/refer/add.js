@@ -27,8 +27,8 @@ module.exports.validation = (request_id, data) => {
         resolve();
       } else {
         let error = {
-          email: referEmail,
-          message: `${referEmail} Email format incorrect`
+          refer_to_email: referEmail,
+          message: `Email format incorrect`
         }        
         resolve(error)
       }
@@ -71,7 +71,7 @@ module.exports.checkIfUserExist = (request_id, payload) => {
       } else {
         logger.info(`${referEmail} has already registered`)
         let error = {
-          email: referEmail,
+          refer_to_email: referEmail,
           message: `${referEmail} has already registered`
         }        
         resolve(error)
@@ -97,7 +97,7 @@ module.exports.checkIfAlreadyReferredBySameUser = (request_id, payload) => {
         logger.info(`You have already referred ${referEmail}.`)
 
         let error = {
-          email: referEmail,
+          refer_to_email: referEmail,
           message: `You have already referred ${referEmail}.`
         }        
         resolve(error)

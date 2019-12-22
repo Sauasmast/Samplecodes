@@ -61,7 +61,8 @@ module.exports.sendWebReferral = async (req, res) => {
     for(let referEmail of emails) {
       payload.referEmail = referEmail;
       responseBody.hasError = false;
-      // await addModule.validation(req.request_id, payload);
+      errorObj = await addModule.validation(req.request_id, payload);
+      handleErrorChecking(errorObj, responseBody);
       errorObj = await addModule.checkIfUserExist(req.request_id, payload);
       handleErrorChecking(errorObj, responseBody);
       if(!responseBody.hasError) {

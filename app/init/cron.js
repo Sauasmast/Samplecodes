@@ -15,7 +15,7 @@ const notification = require(__base + '/app/modules/secondary_services/notificat
 
 const init = () => {
   // const job = new CronJob('0 8,12,16,20 * * *', async function() {
-  const job = new CronJob('* * * * * * *', async function() {
+  const job = new CronJob('09 22 * * *', async function() {
 
     logger.info('Initiating daily cron job');
 
@@ -58,9 +58,11 @@ const init = () => {
 
 const initReferReminder = () => {
   // const job = new CronJob('0 8,12,16,20 * * *', async function() {
-  const job = new CronJob('00 22 * * *', async function() {
+  const job = new CronJob('44 22 * * *', async function() {
 
     logger.info('Initiating refer reminder daily cron job');
+    bot.send(uuid(), `Inititing Refer Reminder cron job - ${uuid()}`);
+
 
     const current_time = momentTZ().tz("America/New_York").format('YYYY-MM-DD');
     const req = { request_id: uuid() };
