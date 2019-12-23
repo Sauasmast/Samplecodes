@@ -64,6 +64,9 @@ exports = module.exports = app => {
   app.route(route.passwordCode)
     .get(password.validateCode)
 
+  app.route(route.changePassword)
+    .post(authorization.authCheck, password.directChangePassword)
+
 
   //dashboard info
   app.route(route.dashboard)

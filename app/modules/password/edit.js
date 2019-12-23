@@ -57,6 +57,44 @@ module.exports.checkIfUserExists = (request_id, payload) => {
   });
 };
 
+module.exports.checkIfPasswordMatches = (request_id, payload) => {
+  return new Promise(async (resolve, reject) => {
+    let querystring = 'SELECT * FROM web_users WHERE email = ? AND password = ?';
+    try {
+      let result = await mysql.query(request_id, db, querystring, [payload.email, payload.old_password]);
+      if (result.length !== 1) {
+        reject({ code: 101, custom_message: 'Invalid username or password.' });
+      } else {
+        resolve(result[0]);
+      }
+    } catch (e) {
+      reject({ code: 102, message: { message: e.message, stack: e.stack } });
+    }
+  });
+};
+
+module.exports.comparePassword = (request_id, payload) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const { old_password, userPassword } = payload;
+      bcrypt.compare(old_password, userPassword, (err, matched) => {
+        if (err) {
+          reject({ status: 102, message: 'Internal Server error' });
+        } else if (matched) {
+          resolve();
+        } else {
+          reject({
+            code: 102,
+            custom_message: 'Invalid email or password.'
+          });
+        }
+      });
+    } catch (e) {
+      reject({ code: 102, message: { message: e.message, stack: e.stack } });
+    }
+  });
+};
+
 // Hash Password during registration
 module.exports.hashPassword = (request_id, payload) => {
   return new Promise((resolve, reject) => {

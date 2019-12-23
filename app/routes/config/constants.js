@@ -13,7 +13,8 @@ const routes = {
   refer_registration: '/api/web/referral',
   password: '/api/web/password',
   passwordCode: '/api/web/password/code',
-  dashboard: '/api/web/dashboard'
+  dashboard: '/api/web/dashboard',
+  changePassword: '/api/web/changePassword'
 };
 
 module.exports = routes;

@@ -27,7 +27,7 @@ module.exports.register = async (req, res) => {
     await addModule.insertIntoDashboardTable(req.request_id, payload);
     await addModule.insertIntoMarketingTable(req.request_id, payload);
 
-    // await send_email.sendHelloEmail(req.request_id, payload);
+    await send_email.sendHelloEmail(req.request_id, payload);
     bot.send(req.request_id, `Someone started registration - ${req.request_id}`);
 
     response.success(req.request_id, payload, res);

@@ -88,8 +88,8 @@ module.exports.changePassword = async (req, res) => {
     // const { user_id } = req.authInfo;
     // req.body.user_id = user_id;
     await addModule.init(req.request_id, req.body);
-    const { email, password, code } = req.body;
-    const payload = {email, password, code}
+    const { password, code, old_password } = req.body;
+    const payload = {email, password, code, old_password}
     await addModule.validate(req.request_id, payload);
     await addModule.checkIfWebUserExist(req.request_id, payload);
     let data = await editModule.checkIfCodeExists(req.request_id, payload);
@@ -98,6 +98,12 @@ module.exports.changePassword = async (req, res) => {
 
     await editModule.checkExpiry(req.request_id, payload);
     await editModule.softDelete(req.request_id, payload);
+
+    const hashedOldPassword = await editModule.hashOldPassword(req.request_id, payload);
+    payload.old_password = hashedOldPassword;
+
+    editModule.checkIfPasswordMatches(req.request_id, payload);
+
 
     const hashedPassword = await editModule.hashPassword(req.request_id, payload);
     payload.password = hashedPassword;
@@ -114,3 +120,37 @@ module.exports.changePassword = async (req, res) => {
 
   }
 }
+
+module.exports.directChangePassword = async (req, res) => {
+  try {
+    const { user_id } = req.authInfo;
+    req.body.user_id = user_id;
+    await addModule.initDirect(req.request_id, req.body);
+    const { password, old_password } = req.body;
+
+    const payload = {password, old_password, user_id, user_id}
+    const user = await addModule.checkIfWebUserExistById(req.request_id, payload);
+    payload.userPassword = user.password;
+    payload.email = user.email;
+
+    await addModule.validate(req.request_id, payload);
+    await editModule.comparePassword(req.request_id, payload);
+
+
+    const hashedPassword = await editModule.hashPassword(req.request_id, payload);
+    payload.password = hashedPassword;
+
+    await addModule.changePassword(req.request_id, payload);
+
+    // await send_email.sendPasswordChangedEmail(req.request_id, payload);
+
+    bot.send(req.request_id, `Someone changed their password - ${req.request_id}`);
+
+    response.success(req.request_id, {message: 'Password has been successfully changed'}, res);
+  } catch(e) {
+    response.failure(req.request_id, e, res);
+
+  }
+}
+
+

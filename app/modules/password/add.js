@@ -9,13 +9,24 @@ const uuid = require('uuid/v4');
 
 module.exports.init = (request_id, data) => {
   return new Promise((resolve, reject) => {
-    if(typeof data.email !== 'undefined' || typeof data.password !== 'undefined') {
+    if(typeof data.email !== 'undefined' || typeof data.password !== 'undefined' || typeof data.old_password !== 'undefined') {
       resolve();
     } else {
       reject({ code: 103.2, custom_message: 'Attributes validation incorrect.' });
     }
   });
 };
+
+module.exports.initDirect = (request_id, data) => {
+  return new Promise((resolve, reject) => {
+    if(typeof data.password !== 'undefined' || typeof data.old_password !== 'undefined') {
+      resolve();
+    } else {
+      reject({ code: 103.2, custom_message: 'Attributes validation incorrect.' });
+    }
+  });
+};
+
 
 module.exports.validate = (request_id, data) => {
   return new Promise((resolve, reject) => {
@@ -32,6 +43,25 @@ module.exports.validate = (request_id, data) => {
   });
 };
 
+module.exports.checkIfWebUserExistById = (request_id, payload) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let queryString = 'SELECT * from web_users WHERE user_id = ?';
+      const { user_id } = payload;
+
+      let results = await mysql.query(request_id, db, queryString, [user_id]);
+      if(results.length === 1) {
+        resolve(results[0]);
+      } else {
+        reject({ code: 103.1, custom_message: 'Invalid user or token provided.' });
+      }
+    } catch(e) {
+      console.log(e);
+      reject({ code: 102, message: 'Internal Server Error' });
+    }
+  })
+}
+
 
 module.exports.checkIfWebUserExist = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
@@ -41,7 +71,7 @@ module.exports.checkIfWebUserExist = (request_id, payload) => {
 
       let results = await mysql.query(request_id, db, queryString, [email]);
       if(results.length === 1) {
-        resolve();
+        resolve(results[0]);
       } else {
         reject({ code: 103.1, custom_message: 'Invalid email or token provided.' });
       }
