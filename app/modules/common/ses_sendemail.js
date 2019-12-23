@@ -128,7 +128,7 @@ module.exports.sendResetPasswordEmail = (request_id, payload) => {
         templateId: config.sendgrid.forgot_password_email_template_id,
         dynamic_template_data: {
           name: payload.name ? payload.name : '',
-          reset_password_link: `https://hazelnut-web.herokuapp.com/password/${payload.new_code}`
+          reset_password_link: `https://hazelnut-web.herokuapp.com/resetpassword/${payload.new_code}`
           // reset_password_link: `http://localhost:3001/api/web/password/code?code=${payload.new_code}`
         }
       };

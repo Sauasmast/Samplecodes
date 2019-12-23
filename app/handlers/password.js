@@ -88,8 +88,8 @@ module.exports.changePassword = async (req, res) => {
     // const { user_id } = req.authInfo;
     // req.body.user_id = user_id;
     await addModule.init(req.request_id, req.body);
-    const { password, code, old_password } = req.body;
-    const payload = {email, password, code, old_password}
+    const { password, code, email } = req.body;
+    const payload = {email, password, code}
     await addModule.validate(req.request_id, payload);
     await addModule.checkIfWebUserExist(req.request_id, payload);
     let data = await editModule.checkIfCodeExists(req.request_id, payload);
@@ -98,12 +98,6 @@ module.exports.changePassword = async (req, res) => {
 
     await editModule.checkExpiry(req.request_id, payload);
     await editModule.softDelete(req.request_id, payload);
-
-    const hashedOldPassword = await editModule.hashOldPassword(req.request_id, payload);
-    payload.old_password = hashedOldPassword;
-
-    editModule.checkIfPasswordMatches(req.request_id, payload);
-
 
     const hashedPassword = await editModule.hashPassword(req.request_id, payload);
     payload.password = hashedPassword;
