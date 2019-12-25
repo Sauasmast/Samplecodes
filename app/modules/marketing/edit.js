@@ -50,10 +50,10 @@ module.exports.updateBooksForYouEmailList = (request_id, payload) => {
 module.exports.updateReferReminderList = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const queryString = 'UPDATE marketing SET is_reminder_email_sent = ? WHERE email = ?';
-      const { email } = payload;
+      const queryString = 'UPDATE referrals SET is_reminder_email_sent = ? WHERE refer_id = ?';
+      const { refer_id } = payload;
 
-      let results = await mysql.query(request_id, db, queryString, [1, email]);
+      let results = await mysql.query(request_id, db, queryString, [1, refer_id]);
       if(results.length >= 1) {
         resolve();
       } else {

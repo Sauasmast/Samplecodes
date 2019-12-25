@@ -30,7 +30,9 @@ module.exports.getFacebookEmailList = (request_id, payload) => {
 module.exports.getBooksforYouEmaillist = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let queryString = 'SELECT email from marketing WHERE is_intro_email_sent = ? AND account_status =? AND created_at < ? ';
+      let queryString = `SELECT email from marketing 
+      WHERE is_intro_email_sent = ? AND account_status =? AND created_at < ?`;
+
       const { intro_email_schedule } = payload;
 
       let results = await mysql.query(request_id, db, queryString, [0, 'active', intro_email_schedule]);
@@ -50,10 +52,11 @@ module.exports.getBooksforYouEmaillist = (request_id, payload) => {
 module.exports.getReferReminderEmailList = (request_id, payload) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let queryString = 'SELECT r.refer_to_email as email, r.refer_code as refer_code, m.user_id as user_id from referrals r JOIN marketing m  WHERE r.status != ? AND r.created_at <= ? ';
+      let queryString = 'SELECT * from referrals WHERE status != ? AND  is_reminder_email_sent=? AND created_at <= ? ';
+      
       const { day_1_reminder_email_schedule } = payload;
 
-      let results = await mysql.query(request_id, db, queryString, [ 'active', day_1_reminder_email_schedule]);
+      let results = await mysql.query(request_id, db, queryString, [ 'active', 0,  day_1_reminder_email_schedule]);
       if(results.length >= 1) {
         resolve(results);
       } else {

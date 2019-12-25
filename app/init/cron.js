@@ -15,7 +15,7 @@ const notification = require(__base + '/app/modules/secondary_services/notificat
 
 const init = () => {
   // const job = new CronJob('0 8,12,16,20 * * *', async function() {
-  const job = new CronJob('09 22 * * *', async function() {
+  const job = new CronJob('09 01 * * *', async function() {
 
     logger.info('Initiating daily cron job');
 
@@ -28,7 +28,6 @@ const init = () => {
     }
     
     const facebook_email_list = await marketingInfoModule.getFacebookEmailList(req, payload);
-    
     const books_for_you_email_list = await marketingInfoModule.getBooksforYouEmaillist(req, payload);
 
     if(facebook_email_list.length > 0) {
@@ -58,7 +57,7 @@ const init = () => {
 
 const initReferReminder = () => {
   // const job = new CronJob('0 8,12,16,20 * * *', async function() {
-  const job = new CronJob('44 22 * * *', async function() {
+  const job = new CronJob('00 08 * * *', async function() {
 
     logger.info('Initiating refer reminder daily cron job');
     bot.send(uuid(), `Inititing Refer Reminder cron job - ${uuid()}`);
@@ -72,8 +71,8 @@ const initReferReminder = () => {
     }
     const refer_reminder_email_list = await  marketingInfoModule.getReferReminderEmailList(req, payload);
     refer_reminder_email_list.forEach(async l => {
-      await notification.day1ReferReminderEmail(req.request_id, {email: l.email, refer_code: l.refer_code});
-      await marketingEditModule.updateReferReminderList(req, {email})
+      await notification.day1ReferReminderEmail(req.request_id, {email: l.refer_to_email, refer_code: l.refer_code});
+      await marketingEditModule.updateReferReminderList(req, {refer_id:  l.refer_id})
     })
 
     logger.info('Ending background job');
