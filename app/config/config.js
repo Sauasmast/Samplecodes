@@ -52,9 +52,8 @@ module.exports = {
     pending_points: 200
   },
   services: {
+    refer: process.env.WEB_URL,
     notification: process.env.NOTIFICATION_HOST,
   },
-  marketing_trigger_days: {
-    
-  }
+
 };
