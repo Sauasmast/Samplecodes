@@ -76,4 +76,8 @@ exports = module.exports = app => {
   app.route(route.ocrDemo)
     .post(authorization.authCheck, demo.ocrDemo)
 
+  //ocr image upload
+  app.route(route.uploadImage)
+  .post(authorization.authCheck, demo.uploadImageToS3)
+
 };

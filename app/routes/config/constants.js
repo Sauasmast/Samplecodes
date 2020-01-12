@@ -17,7 +17,9 @@ const routes = {
   changePassword: '/api/web/changePassword',
 
   //demo endpoints
-  ocrDemo: '/api/web/ocr/demo'
+  ocrDemo: '/api/web/ocr/demo',
+
+  uploadImage: '/api/web/ocr/upload'
 };
 
 module.exports = routes;

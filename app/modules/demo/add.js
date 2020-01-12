@@ -21,13 +21,11 @@ module.exports.insertImageIntoS3Bucket = (request_id, req, res) => {
       singleUpload(req, res, async (err, some) => {
       
         if (err) {
-          console.log(err)
           logger.error(err);
           reject({ code: 103.3, message: 'Failure to insert photo.' });
         } else if (req.temp.fileValidationError) {
           reject({ code: 103.3, custom_message: 'Incorrect file format.' });
         } else {
-          console.log('image saved');
           resolve();
         }
       });
@@ -63,7 +61,6 @@ module.exports.callOCRservice = (request_id, data) => {
         resolve(response.data);
       })
       .catch(err => {
-        console.log('err', err);
         reject();
       })
   })
