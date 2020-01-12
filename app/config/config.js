@@ -17,7 +17,10 @@ module.exports = {
   aws: {
     s3: {
       accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY
+      secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
+      postImageBucket: process.env.POST_IMAGE_BUCKET,
+      postImageBucketLocation: process.env.POST_IMAGE_BUCKET_LOCATION
+
     },
     ses: {
       accessKeyId: process.env.AWS_SES_ACCESS_KEY,
@@ -52,6 +55,7 @@ module.exports = {
     pending_points: 200
   },
   services: {
+    ocr: process.env.OCR_SERVICE_HOST,
     refer: process.env.WEB_URL,
     notification: process.env.NOTIFICATION_HOST,
   },

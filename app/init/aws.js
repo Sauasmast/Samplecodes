@@ -7,17 +7,15 @@ const logger = require(__base + '/app/modules/common/logger');
 
 let s3 = null;
 
-function initializeAWS_SDK_S3() {
+function initializeAWS_SDK_S3 () {
   logger.debug(`Initializing AWS`);
 
   AWS.config.update({
     accessKeyId: config.aws.s3.accessKeyId,
-    secretAccessKey: config.aws.s3.secretAccessKey
+    secretAccessKey: config.aws.s3.secretAccessKey,
+    region: config.aws.s3.postImageBucketLocation
   });
 
-  AWS.config.apiVersions = {
-    s3: '2006-03-01'
-  };
 
   s3 = new AWS.S3();
 }
@@ -25,7 +23,7 @@ function initializeAWS_SDK_S3() {
 initializeAWS_SDK_S3();
 
 module.exports.getS3 = () => {
-  if (!s3) {
+  if (!s3){
     initializeAWS_SDK_S3();
   }
 

@@ -16,7 +16,7 @@ const registration = require(__base + '/app/handlers/registration');
 const login = require(__base + '/app/handlers/login');
 const password = require(__base + '/app/handlers/password');
 const dashboard = require(__base + '/app/handlers/dashboard');
-
+const demo = require(__base + '/app/handlers/demo');
 
 exports = module.exports = app => {
 
@@ -71,4 +71,9 @@ exports = module.exports = app => {
   //dashboard info
   app.route(route.dashboard)
     .get(authorization.authCheck, dashboard.getDashboardInfo);
+
+  //ocr demo
+  app.route(route.ocrDemo)
+    .post(authorization.authCheck, demo.ocrDemo)
+
 };

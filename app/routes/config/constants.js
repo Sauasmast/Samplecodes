@@ -14,7 +14,10 @@ const routes = {
   password: '/api/web/password',
   passwordCode: '/api/web/password/code',
   dashboard: '/api/web/dashboard',
-  changePassword: '/api/web/changePassword'
+  changePassword: '/api/web/changePassword',
+
+  //demo endpoints
+  ocrDemo: '/api/web/ocr/demo'
 };
 
 module.exports = routes;
