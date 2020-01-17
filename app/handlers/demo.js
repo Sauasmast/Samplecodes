@@ -7,10 +7,10 @@ const demoAddModule = require(__base + '/app/modules/demo/add');
 
 module.exports.uploadImageToS3 = async (req, res) => {
   try {
-    const user_id = req.authInfo.user_id;
+    // const user_id = req.authInfo.user_id;
     const post_id = uuid();
    
-    const payload = {user_id, post_id}
+    const payload = {post_id}
 
     req.temp = { post_id };
     await demoAddModule.insertImageIntoS3Bucket(req.request_id, req, res);
@@ -32,7 +32,7 @@ module.exports.uploadImageToS3 = async (req, res) => {
 
 module.exports.ocrDemo = async (req, res) => {
   try {
-    const user_id = req.authInfo.user_id;
+    // const user_id = req.authInfo.user_id;
     const post_id = uuid();
    
     // const payload = {user_id, post_id}

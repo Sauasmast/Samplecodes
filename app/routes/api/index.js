@@ -74,10 +74,10 @@ exports = module.exports = app => {
 
   //ocr demo
   app.route(route.ocrDemo)
-    .post(authorization.authCheck, demo.ocrDemo)
+    .post(demo.ocrDemo)
 
   //ocr image upload
   app.route(route.uploadImage)
-  .post(authorization.authCheck, demo.uploadImageToS3)
+  .post(demo.uploadImageToS3)
 
 };
